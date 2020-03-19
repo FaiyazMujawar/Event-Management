@@ -1,0 +1,26 @@
+<%- include("partials/header") -%>
+<h3>
+    Welcome, Co-ordinator!
+</h3>
+<br />
+<h4>
+    Event Details:
+</h4>
+<br />
+<% if(typeof events !== "undefined"){ %>
+<div class="card">
+    <h5 class="card-header card-header-rose"><b>Event Name</b></h5>
+    <div class="card-body">
+        <p class="card-text">
+            <h5>
+                Event date: 20/12/2020
+            </h5>
+            <h5>
+                Event description: Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque, iusto!
+            </h5>
+        </p>
+    </div>
+</div>
+<% } %>
+</div>
+<%- include("partials/footer") -%>
