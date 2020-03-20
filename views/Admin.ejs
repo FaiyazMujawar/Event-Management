@@ -1,7 +1,7 @@
 <%- include("partials/header") -%>
 <div class="container">
     <h3>
-        Hello, Admin!
+        Welcome, Admin!
     </h3>
     <br />
     <h4>
@@ -11,26 +11,27 @@
         <thead class="table-secondary">
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
+                <th scope="col">Event Name</th>
+                <th scope="col">Event Date</th>
             </tr>
         </thead>
         <tbody>
+            <% if(typeof events !== "undefined"){ %> <% let id=1; %>
+            <%events.forEach(event=>{%>
             <tr>
-                <th scope="row">1</th>
-                <td><a href="">Mark</a></td>
-                <td>Otto</td>
-                <td>@mdo</td>
+                <th scope="row"><%= id %></th>
+                <td><a href=""><%= event.name %></a></td>
+                <td><%= event.date %></td>
             </tr>
+            <% }) %> <% }else { %>
             <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
+                <td colspan="3"><h5>No Events!</h5></td>
             </tr>
+            <% } %>
         </tbody>
     </table>
-    <input type="button" class="btn btn-lg btn-primary" value="Add Event" />
+    <a href="/users/admin/events/add" class="btn btn-lg btn-primary"
+        >Add Event</a
+    >
 </div>
 <%- include("partials/header") -%>

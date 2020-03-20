@@ -8,19 +8,23 @@
 </h4>
 <br />
 <% if(typeof events !== "undefined"){ %>
+    <% events.forEach(event=>{ %>
 <div class="card">
-    <h5 class="card-header card-header-rose"><b>Event Name</b></h5>
+    <h5 class="card-header card-header-rose"><b><%= event.name %></b></h5>
     <div class="card-body">
         <p class="card-text">
             <h5>
-                Event date: 20/12/2020
+                Date: <%= event.date %>
             </h5>
             <h5>
-                Event description: Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque, iusto!
+                <b>Description</b>: <%= event.description %>
             </h5>
         </p>
     </div>
 </div>
+<% }) %>
+<% }else{ %>
+    <h5>No Events!</h5>
 <% } %>
 </div>
 <%- include("partials/footer") -%>
