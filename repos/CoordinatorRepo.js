@@ -21,7 +21,7 @@ class CoordinatorRepo {
                             msg: "An unexpected error occurred!"
                         };
                         console.log("in some error");
-                        return reject(false);
+                        return reject(reply);
                     } else {
                         if (!user) {
                             const reply = {
@@ -29,14 +29,14 @@ class CoordinatorRepo {
                                 msg: "User not saved!"
                             };
                             console.log("in not user saved");
-                            return reject(false);
+                            return reject(reply);
                         } else {
                             const reply = {
                                 status: true,
                                 msg: null
                             };
                             console.log("in user saved");
-                            return resolve(true);
+                            return resolve(reply);
                         }
                     }
                 }
@@ -54,10 +54,12 @@ class CoordinatorRepo {
         return new Promise((resolve, reject) => {
             User.findOne({ username: username })
                 .then(user => {
-                    console.log("user", user);
-                    return resolve(true)
+                    if (user) {
+                        return resolve(true)
+                    }
+                    return reject(false)
                 })
-                .catch(() => { return reject(false) });
+                .catch(() => { return reject(null) });
         })
     }
 }

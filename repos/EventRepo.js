@@ -5,8 +5,13 @@ class EventRepo {
     async eventExists(name, date) {
         return new Promise((resolve, reject) => {
             Event.findOne({ name: name, date: date })
-                .then(() => { return resolve(true) })
-                .catch(() => { return reject(false) })
+                .then(event => {
+                    if (event) {
+                        return resolve(true)
+                    }
+                    return reject(false)
+                })
+                .catch(() => { return reject(null) })
         })
     }
 
@@ -18,8 +23,13 @@ class EventRepo {
         })
         return new Promise((resolve, reject) => {
             event.save()
-                .then(() => { return resolve(true) })
-                .catch(() => { return reject(false) })
+                .then(result => {
+                    if (result) {
+                        return resolve(true)
+                    }
+                    return reject(false)
+                })
+                .catch(() => { return reject(null) })
         })
     }
 }

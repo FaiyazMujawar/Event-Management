@@ -6,27 +6,54 @@ class CoordinatorService {
     async addCoordinator(firstName, lastName, username, password, eventName) {
         return new Promise((resolve, reject) => {
             coordinatorRepo.existsByUsername(username)
-                .then(user => {
-                    console.log(user);
-                    console.log("coord not added,already exists");
-                    const reply = {
-                        status: false,
-                        msg: "Username already exists!"
+                .then(found => {
+                    if (found) {
+                        console.log("coord not added,already exists");
+                        const reply = {
+                            status: false,
+                            msg: "Username already exists!"
+                        }
+                        return reject(reply)
+                    } else {
+                        /* coordinatorRepo.addCoordinator(firstName, lastName, username, password, eventName)
+                            .then(res => {
+                                if (res.status) {
+                                    console.log("coord added");
+                                    console.log("c-add-response", res);
+                                    return resolve(res)
+                                }
+                                console.log("coord not added");
+                                console.log("c-add-response", res);
+                                return reject(res)
+                            })
+                            .catch(error => {
+                                return reject(error)
+                            }) */
                     }
-                    return reject(reply)
                 })
-                .catch(() => {
-                    coordinatorRepo.addCoordinator(firstName, lastName, username, password, eventName)
-                        .then(res => {
-                            console.log("coord added");
-                            console.log("c-add-response", res);
-                            return resolve(res)
-                        })
-                        .catch(res => {
-                            console.log("coord not added");
-                            console.log("c-add-response", res);
-                            return reject(res)
-                        })
+                .catch(res => {
+                    if (res === false) {
+                        coordinatorRepo.addCoordinator(firstName, lastName, username, password, eventName)
+                            .then(res => {
+                                if (res.status) {
+                                    console.log("coord added");
+                                    console.log("c-add-response", res);
+                                    return resolve(res)
+                                }
+
+                            })
+                            .catch(error => {
+                                console.log("coord not added");
+                                console.log("c-add-response", error);
+                                return reject(error)
+                            })
+                    } else {
+                        const reply = {
+                            status: false,
+                            msg: "Unexpected error occurred"
+                        }
+                        return reject(reply)
+                    }
                 })
         })
     }
