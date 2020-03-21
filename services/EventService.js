@@ -21,15 +21,17 @@ class EventService {
                 .catch(res => {
                     if (res === false) {
                         eventRepo.addEvent(name, date, desc)
-                            .then(() => {
-                                console.log("Event added");
-                                const reply = {
-                                    status: true,
-                                    msg: "Event added!"
+                            .then(result => {
+                                if (result) {
+                                    console.log("Event added");
+                                    const reply = {
+                                        status: true,
+                                        msg: "Event added!"
+                                    }
+                                    return resolve(reply)
                                 }
-                                return resolve(reply)
                             })
-                            .catch(() => {
+                            .catch(result => {
                                 console.log("Event not added");
                                 const reply = {
                                     status: false,

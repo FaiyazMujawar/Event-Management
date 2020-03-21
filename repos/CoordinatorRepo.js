@@ -44,22 +44,19 @@ class CoordinatorRepo {
         })
     }
 
-    async getCoordinatorEvent(username) {
-        return User.findOne({ username: username })
-            .then(user => { return Promise.resolve(user.eventName) })
-            .catch(() => { return Promise.reject(null) })
-    }
-
     async existsByUsername(username) {
         return new Promise((resolve, reject) => {
-            User.findOne({ username: username })
-                .then(user => {
-                    if (user) {
+            User.findOne({ username: username }, (error, user) => {
+                if (error) {
+                    return reject(null)
+                } else {
+                    if (!user) {
+                        return reject(false)
+                    } else {
                         return resolve(true)
                     }
-                    return reject(false)
-                })
-                .catch(() => { return reject(null) });
+                }
+            })
         })
     }
 }

@@ -15,20 +15,7 @@ class CoordinatorService {
                         }
                         return reject(reply)
                     } else {
-                        /* coordinatorRepo.addCoordinator(firstName, lastName, username, password, eventName)
-                            .then(res => {
-                                if (res.status) {
-                                    console.log("coord added");
-                                    console.log("c-add-response", res);
-                                    return resolve(res)
-                                }
-                                console.log("coord not added");
-                                console.log("c-add-response", res);
-                                return reject(res)
-                            })
-                            .catch(error => {
-                                return reject(error)
-                            }) */
+
                     }
                 })
                 .catch(res => {

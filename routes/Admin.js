@@ -44,16 +44,16 @@ router
             .then(reply => {
                 console.log("c-msg", reply.msg);
                 eventService.addEvent(name, date, desc)
-                    .then(reply => {
+                    .then(res => {
                         console.log("Event saved");
-                        console.log(reply.msg);
+                        console.log(res.msg);
                     })
-                    .catch(reply => {
-                        console.log("e-msg", reply.msg);
+                    .catch(error => {
+                        console.log("e-msg", error.msg);
                     })
             })
-            .catch(reply => {
-                console.log("error", reply.msg);
+            .catch(error => {
+                console.log("error", error.msg);
             })
 
 
