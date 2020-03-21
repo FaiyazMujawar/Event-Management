@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const eventService = require("../Services/EventService");
-const coordinatorService = require("../Services/CoordinatorService");
+const eventService = require("../services/EventService");
+const coordinatorService = require("../services/CoordinatorService");
 
 router.get("/", (req, res) => {
     /* if (req.isAuthenticated()) {
@@ -33,25 +33,31 @@ router
             username,
             password
         } = req.body;
-        let cReply = coordinatorService.addCoordinator(
+
+        coordinatorService.addCoordinator(
             firstName,
             lastName,
             username,
             password,
             eventName
-        );
-        console.log("status", cReply.status, "msg", cReply.msg);
-        if (cReply.status) {
-            console.log("co-ord saved");
-            let eReply = eventService.addEvent(eventName, date, desc);
-            if (eReply.status) {
-                console.log("event saved");
-            } else {
-                console.log(eReply.msg);
-            }
-        } else {
-            console.log(cReply.msg);
-        }
+        )
+            .then(reply => {
+                console.log("c-msg", reply.msg);
+                eventService.addEvent(name, date, desc)
+                    .then(reply => {
+                        console.log("Event saved");
+                        console.log(reply.msg);
+                    })
+                    .catch(reply => {
+                        console.log("e-msg", reply.msg);
+                    })
+            })
+            .catch(reply => {
+                console.log(reply.msg);
+            })
+
+
+
         res.send("yep");
     });
 module.exports = router;
