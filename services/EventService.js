@@ -6,34 +6,36 @@ const eventRepo = require("../repos/EventRepo")
 class EventService {
     constructor() { }
     async addEvent(name, date, desc) {
-        return eventRepo.eventExists(name, date)
-            .then(() => {
-                const reply = {
-                    status: false,
-                    msg: "Event already exists!"
-                }
-                console.log("Event not added,already exists");
-                return Promise.reject(reply)
-            })
-            .catch(() => {
-                eventRepo.addEvent(name, date, desc)
-                    .then(() => {
-                        console.log("Event added");
-                        const reply = {
-                            status: true,
-                            msg: "Event added!"
-                        }
-                        return Promise.resolve(reply)
-                    })
-                    .catch(() => {
-                        console.log("Event not added");
-                        const reply = {
-                            status: false,
-                            msg: "An unexprected error occured!"
-                        }
-                        return Promise.reject(reply)
-                    })
-            })
+        return new Promise((resolve, reject) => {
+            eventRepo.eventExists(name, date)
+                .then(() => {
+                    const reply = {
+                        status: false,
+                        msg: "Event already exists!"
+                    }
+                    console.log("Event not added,already exists");
+                    return reject(reply)
+                })
+                .catch(() => {
+                    eventRepo.addEvent(name, date, desc)
+                        .then(() => {
+                            console.log("Event added");
+                            const reply = {
+                                status: true,
+                                msg: "Event added!"
+                            }
+                            return resolve(reply)
+                        })
+                        .catch(() => {
+                            console.log("Event not added");
+                            const reply = {
+                                status: false,
+                                msg: "An unexprected error occured!"
+                            }
+                            return reject(reply)
+                        })
+                })
+        })
     }
 
     async getAllEvents() {

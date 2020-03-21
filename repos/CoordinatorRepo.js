@@ -3,43 +3,45 @@ const User = require("../models/User");
 class CoordinatorRepo {
     constructor() { }
     async addCoordinator(firstName, lastName, username, password, eventName) {
-        return User.register(
-            {
-                firstName: firstName,
-                lastName: lastName,
-                username: username,
-                type: "coordinator",
-                eventName: eventName
-            },
-            password,
-            (error, user) => {
-                if (error) {
-                    console.log(error);
-                    const reply = {
-                        status: false,
-                        msg: "An unexpected error occurred!"
-                    };
-                    console.log("in some error");
-                    return Promise.reject(false);
-                } else {
-                    if (!user) {
+        return new Promise((resolve, reject) => {
+            User.register(
+                {
+                    firstName: firstName,
+                    lastName: lastName,
+                    username: username,
+                    type: "coordinator",
+                    eventName: eventName
+                },
+                password,
+                (error, user) => {
+                    if (error) {
+                        console.log(error);
                         const reply = {
                             status: false,
-                            msg: "User not saved!"
+                            msg: "An unexpected error occurred!"
                         };
-                        console.log("in not user saved");
-                        return Promise.reject(false);
+                        console.log("in some error");
+                        return reject(false);
                     } else {
-                        const reply = {
-                            status: true,
-                            msg: null
-                        };
-                        console.log("in user saved");
-                        return Promise.resolve(true);
+                        if (!user) {
+                            const reply = {
+                                status: false,
+                                msg: "User not saved!"
+                            };
+                            console.log("in not user saved");
+                            return reject(false);
+                        } else {
+                            const reply = {
+                                status: true,
+                                msg: null
+                            };
+                            console.log("in user saved");
+                            return resolve(true);
+                        }
                     }
                 }
-            }
-        );
+            );
+        })
     }
 
     async getCoordinatorEvent(username) {
@@ -49,9 +51,14 @@ class CoordinatorRepo {
     }
 
     async existsByUsername(username) {
-        return User.findOne({ username: username })
-            .then(() => { return Promise.resolve(true) })
-            .catch(() => { return Promise.reject(false) });
+        return new Promise((resolve, reject) => {
+            User.findOne({ username: username })
+                .then(user => {
+                    console.log("user", user);
+                    return resolve(true)
+                })
+                .catch(() => { return reject(false) });
+        })
     }
 }
 

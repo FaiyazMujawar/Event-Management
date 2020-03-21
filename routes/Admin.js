@@ -53,7 +53,7 @@ router
                     })
             })
             .catch(reply => {
-                console.log(reply.msg);
+                console.log("error", reply.msg);
             })
 
 

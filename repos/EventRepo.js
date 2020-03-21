@@ -3,9 +3,11 @@ class EventRepo {
     constructor() { }
 
     async eventExists(name, date) {
-        return Event.findOne({ name: name, date: date })
-            .then(() => { return Promise.resolve(true) })
-            .catch(() => { return Promise.reject(false) })
+        return new Promise((resolve, reject) => {
+            Event.findOne({ name: name, date: date })
+                .then(() => { return resolve(true) })
+                .catch(() => { return reject(false) })
+        })
     }
 
     async addEvent(name, date, desc) {
@@ -14,9 +16,11 @@ class EventRepo {
             date: date,
             desc: desc
         })
-        return event.save()
-            .then(() => { return Promise.resolve(true) })
-            .catch(() => { return Promise.reject(false) })
+        return new Promise((resolve, reject) => {
+            event.save()
+                .then(() => { return resolve(true) })
+                .catch(() => { return reject(false) })
+        })
     }
 }
 
