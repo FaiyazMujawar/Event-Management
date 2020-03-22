@@ -3,25 +3,28 @@ const eventService = require("../services/EventService");
 const coordinatorService = require("../services/CoordinatorService");
 
 router.get("/", (req, res) => {
-    /* if (req.isAuthenticated()) {
-        events = eventService.getAllEvents();
-        res.render("Admin", { events: events });
+    if (req.isAuthenticated() && req.user.type === "admin") {
+        eventService
+            .getAllEvents()
+            .then(events => {
+                res.render("Admin", { events: events });
+            })
+            .catch(() => {
+                res.render("Admin", { events: {} });
+            });
     } else {
         res.redirect("/users/login");
-    } */
-    let events = eventService.getAllEvents();
-    res.render("Admin", { events: events });
+    }
 });
 
 router
     .route("/events/add")
     .get((req, res) => {
-        /* if (req.isAuthenticated()) {
+        if (req.isAuthenticated() && req.user.type === "admin") {
             res.render("AddEvent");
         } else {
             res.redirect("/users/login");
-        } */
-        res.render("AddEvent");
+        }
     })
     .post((req, res) => {
         const {
@@ -33,31 +36,22 @@ router
             username,
             password
         } = req.body;
-
-        coordinatorService.addCoordinator(
-            firstName,
-            lastName,
-            username,
-            password,
-            eventName
-        )
-            .then(reply => {
-                console.log("c-msg", reply.msg);
-                eventService.addEvent(name, date, desc)
-                    .then(res => {
-                        console.log("Event saved");
-                        console.log(res.msg);
+        coordinatorService
+            .addCoordinator(firstName, lastName, username, password, eventName)
+            .then(response => {
+                console.log("msg:", response.msg);
+                eventService
+                    .addEvent(eventName, date, desc)
+                    .then(reply => {
+                        console.log("msg", reply.msg);
                     })
-                    .catch(error => {
-                        console.log("e-msg", error.msg);
-                    })
+                    .catch(err => {
+                        console.log("msg", err.msg);
+                    });
             })
             .catch(error => {
-                console.log("error", error.msg);
-            })
-
-
-
+                console.log("msg", error.msg);
+            });
         res.send("yep");
     });
 module.exports = router;
