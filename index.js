@@ -36,7 +36,7 @@ mongoose
     .catch(error => console.log(error));
 
 app.use("/users/", require("./routes/Login.js"));
-app.use("/users/admin", require("./routes/Admin.js"));
+app.use("/events/", require("./routes/Event"));
 
 const PORT = process.env.PORT || 3000;
 

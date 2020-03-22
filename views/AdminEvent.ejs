@@ -1,0 +1,47 @@
+<%- include("partials/header") -%>
+<div class="container">
+    <h3>
+        Event Details:
+    </h3>
+    <br />
+    <% if(event !== undefined){ %>
+    <div class="card">
+        <h5 class="card-header card-header-rose"><b><%= event.name %></b></h5>
+        <div class="card-body">
+            <p class="card-text">
+                <h5>
+                    <b>Date:</b> <%= event.date %>
+                </h5>
+                <h5>
+                    <b>Description:</b> <%= event.description %>
+                </h5>
+            </p>
+        </div>
+    </div>
+    <% } %>
+    </div>
+    <table class="table table-bordered table-hover">
+        <thead class="table-secondary">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Event Name</th>
+                <th scope="col">Event Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if(coords !== undefined){ %> <% let id=1; %>
+            <% coords.forEach(coord=>{ %>
+            <tr>
+                <th scope="row"><%= id %></th>
+                <td><%= coord.firstName %></td>
+                <td><%= coord.lastName %></td>
+            </tr>
+            <% id++;}) %> <% }else { %>
+            <tr>
+                <td colspan="3"><h5>No Events!</h5></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+<%- include("partials/footer") -%>

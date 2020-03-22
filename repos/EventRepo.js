@@ -38,6 +38,22 @@ class EventRepo {
             });
         });
     }
+
+    async getEvent(eventName) {
+        return new Promise((resolve, reject) => {
+            Event.findOne({ name: eventName }, (error, event) => {
+                if (error) {
+                    return reject(null);
+                } else {
+                    if (!event) {
+                        return reject(null);
+                    } else {
+                        return resolve(event);
+                    }
+                }
+            });
+        });
+    }
 }
 
 module.exports = new EventRepo();

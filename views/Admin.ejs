@@ -16,21 +16,21 @@
             </tr>
         </thead>
         <tbody>
-            <% if(typeof events !== "undefined"){ %> <% let id=1; %>
-            <%events.forEach(event=>{%>
+            <% if(events !== undefined){ %> <% let id=1; %>
+            <% events.forEach(event=>{ %>
             <tr>
                 <th scope="row"><%= id %></th>
-                <td><a href=""><%= event.name %></a></td>
+                <td><a href=<%= `/events/event/${event.name}` %>><%= event.name %></a></td>
                 <td><%= event.date %></td>
             </tr>
-            <% }) %> <% }else { %>
+            <% id++;}) %> <% }else { %>
             <tr>
                 <td colspan="3"><h5>No Events!</h5></td>
             </tr>
             <% } %>
         </tbody>
     </table>
-    <a href="/users/admin/events/add" class="btn btn-lg btn-primary"
+    <a href="/events/add" class="btn btn-lg btn-primary"
         >Add Event</a
     >
 </div>

@@ -3,6 +3,7 @@ const coordinatorRepo = require("../repos/CoordinatorRepo");
 
 class CoordinatorService {
     constructor() {}
+
     async addCoordinator(firstName, lastName, username, password, eventName) {
         return new Promise((resolve, reject) => {
             coordinatorRepo
@@ -40,14 +41,20 @@ class CoordinatorService {
                 });
         });
     }
-    async getCordinatorEvent(name) {
-        User.find({ username: name }, (error, user) => {
-            if (error) {
-                console.log(error);
-                return null;
-            } else {
-                return user.eventName;
-            }
+
+    async getEventCoordinators(eventName) {
+        return new Promise((resolve, reject) => {
+            User.find({ eventName: eventName }, (error, coords) => {
+                if (error) {
+                    return reject(null);
+                } else {
+                    if (!coords) {
+                        return reject(null);
+                    } else {
+                        return resolve(coords);
+                    }
+                }
+            });
         });
     }
 }

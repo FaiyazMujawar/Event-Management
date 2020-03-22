@@ -1,5 +1,6 @@
 const Event = require("../models/Event");
 const eventRepo = require("../repos/EventRepo");
+const coordinatorService = require("../services/CoordinatorService");
 
 class EventService {
     constructor() {}
@@ -44,16 +45,32 @@ class EventService {
     }
 
     async getAllEvents() {
-        Event.find()
-            .then(events => {
-                if (events) {
-                    return Promise.resolve(events);
+        return new Promise((resolve, reject) => {
+            Event.find((error, events) => {
+                if (error) {
+                    return reject(null);
+                } else {
+                    if (!events) {
+                        return reject(null);
+                    } else {
+                        return resolve(events);
+                    }
                 }
-                Promise.reject(null);
-            })
-            .catch(error => {
-                Promise.reject(error);
             });
+        });
+    }
+
+    async getEvent(name) {
+        return new Promise((resolve, reject) => {
+            eventRepo
+                .getEvent(name)
+                .then(event => {
+                    return resolve(event);
+                })
+                .catch(() => {
+                    return reject(null);
+                });
+        });
     }
 }
 

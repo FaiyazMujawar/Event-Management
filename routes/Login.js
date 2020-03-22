@@ -10,7 +10,7 @@ router
     .post(
         passport.authenticate("local", { failureRedirect: "/users/login" }),
         (req, res) => {
-            res.redirect("/users/admin");
+            res.redirect("/events");
         }
     );
 

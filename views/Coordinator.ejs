@@ -7,8 +7,8 @@
     Event Details:
 </h4>
 <br />
-<% if(typeof events !== "undefined"){ %>
-    <% events.forEach(event=>{ %>
+<% if(events !== undefined){ %>
+<% events.forEach(event=>{ %>
 <div class="card">
     <h5 class="card-header card-header-rose"><b><%= event.name %></b></h5>
     <div class="card-body">
