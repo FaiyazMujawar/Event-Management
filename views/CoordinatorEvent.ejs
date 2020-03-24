@@ -19,25 +19,31 @@
         </div>
     </div>
     <% } %>
+    <div>
+        <h3>
+            Registrar:
+            <a class="btn btn-sm" href=<%=` /events/event/${event.name}/registrars` %>>Add Registrar</a>
+        </h3>
+    </div>
     <table class="table table-bordered table-hover">
         <thead class="table-secondary">
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Co-ordinator Name</th>
+                <th scope="col">Registrar Name</th>
                 <th scope="col">Username</th>
             </tr>
         </thead>
         <tbody>
-            <% if(coords !== undefined){ %> <% let id=1; %>
-            <% coords.forEach(coord=>{ %>
+            <% if(registrars !== undefined){ %> <% let id=1; %>
+            <% registrars.forEach(registrar=>{ %>
             <tr>
                 <th scope="row"><%= id %></th>
-                <td><%= coord.firstName %> <%= coord.lastName %></td>
-                <td><%= coord.username %></td>
+                <td><%= registrar.firstName %> <%= registrar.lastName %></td>
+                <td><%= registrar.username %></td>
             </tr>
             <% id++;}) %> <% }else { %>
             <tr>
-                <td colspan="3"><h5>No Events!</h5></td>
+                <td colspan="3"><h5>No registrars!</h5></td>
             </tr>
             <% } %>
         </tbody>

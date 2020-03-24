@@ -1,8 +1,6 @@
 const Schema = require("mongoose").Schema;
 const model = require("mongoose").model;
-const passportLocal = require("passport-local-mongoose");
-
-const UserSchema = new Schema({
+const ParticipantSchema = new Schema({
     firstName: {
         type: String,
         required: true
@@ -11,11 +9,11 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
-    username: {
+    email: {
         type: String,
         required: true
     },
-    type: {
+    contact: {
         type: String,
         required: true
     },
@@ -25,6 +23,4 @@ const UserSchema = new Schema({
     }
 });
 
-UserSchema.plugin(passportLocal);
-
-module.exports = model("User", UserSchema);
+module.exports = model("Participant", ParticipantSchema);

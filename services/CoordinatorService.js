@@ -1,12 +1,18 @@
-const User = require("../models/User.js");
-const coordinatorRepo = require("../repos/CoordinatorRepo");
+// const coordinatorRepo = require("../repos/CoordinatorRepo");
+const userRepo = require("../repos/UserRepo");
 
 class CoordinatorService {
     constructor() {}
 
-    async addCoordinator(firstName, lastName, username, password, eventName) {
+    async addEventCoordinator(
+        firstName,
+        lastName,
+        username,
+        password,
+        eventName
+    ) {
         return new Promise((resolve, reject) => {
-            coordinatorRepo
+            userRepo
                 .existsByUsername(username)
                 .then(found => {
                     const reply = {
@@ -17,13 +23,14 @@ class CoordinatorService {
                 })
                 .catch(res => {
                     if (res === false) {
-                        coordinatorRepo
-                            .addCoordinator(
+                        userRepo
+                            .addUser(
                                 firstName,
                                 lastName,
                                 username,
                                 password,
-                                eventName
+                                eventName,
+                                "coordinator"
                             )
                             .then(res => {
                                 return resolve(res);
@@ -44,17 +51,27 @@ class CoordinatorService {
 
     async getEventCoordinators(eventName) {
         return new Promise((resolve, reject) => {
-            User.find({ eventName: eventName }, (error, coords) => {
-                if (error) {
+            return userRepo
+                .getUsers(eventName, "coordinator")
+                .then(coords => {
+                    return resolve(coords);
+                })
+                .catch(() => {
                     return reject(null);
-                } else {
-                    if (!coords) {
-                        return reject(null);
-                    } else {
-                        return resolve(coords);
-                    }
-                }
-            });
+                });
+        });
+    }
+
+    async getCoordinatorEvent(username) {
+        return new Promise((resolve, reject) => {
+            return userRepo
+                .getUserEvent(username)
+                .then(event => {
+                    return resolve(event);
+                })
+                .catch(() => {
+                    return reject(null);
+                });
         });
     }
 }
