@@ -59,39 +59,69 @@ router.get("/", (req, res) => {
                         participants: undefined
                     });
                 });
+        } else if (req.user.type === "registrar") {
+            res.render("Registrar", {
+                eventURI: _.kebabCase(req.user.eventName)
+            });
         }
     } else {
         res.redirect("/users/login");
     }
 });
 
-router.get("/event/:eventName", (req, res) => {
-    if (req.isAuthenticated()) {
-        if (req.user.type === "admin") {
-            eventService
-                .getEvent(req.params.eventName)
-                .then(event => {
-                    coordinatorService
-                        .getEventCoordinators(req.params.eventName)
-                        .then(coords => {
-                            res.render("AdminEvent", {
-                                event: event,
-                                coords: coords
+router
+    .route("/event/:eventName")
+    .get((req, res) => {
+        if (req.isAuthenticated()) {
+            if (req.user.type === "admin") {
+                eventService
+                    .getEvent(req.params.eventName)
+                    .then(event => {
+                        coordinatorService
+                            .getEventCoordinators(req.params.eventName)
+                            .then(coords => {
+                                res.render("AdminEvent", {
+                                    event: event,
+                                    coords: coords
+                                });
+                            })
+                            .catch(() => {
+                                res.render("AdminEvent", {
+                                    event: undefined,
+                                    coords: undefined
+                                });
                             });
-                        })
-                        .catch(() => {
-                            res.render("AdminEvent", {
-                                event: undefined,
-                                coords: undefined
-                            });
-                        });
-                })
-                .catch(() => {
-                    res.render("AdminEvent", { event: undefined });
-                });
+                    })
+                    .catch(() => {
+                        res.render("AdminEvent", { event: undefined });
+                    });
+            }
         }
-    }
-});
+    })
+    .post((req, res) => {
+        if (req.isAuthenticated()) {
+            if (req.user.type === "registrar") {
+                const { firstName, lastName, email, contact } = req.body;
+                participantService
+                    .addParticipant(
+                        firstName,
+                        lastName,
+                        email,
+                        contact,
+                        req.user.eventName
+                    )
+                    .then(response => {
+                        console.log("msg:", response.msg);
+                    })
+                    .catch(error => {
+                        console.log("msg:", error.msg);
+                    });
+                res.redirect(`/events/event/${req.params.eventName}`);
+            }
+        } else {
+            res.redirect("/users/login");
+        }
+    });
 
 router
     .route("/add")
