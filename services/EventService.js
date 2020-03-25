@@ -1,4 +1,5 @@
 const eventRepo = require("../repos/EventRepo");
+const _ = require("lodash");
 
 class EventService {
     constructor() {}
@@ -16,6 +17,12 @@ class EventService {
                 })
                 .catch(res => {
                     if (res === false) {
+                        name = name.replace(/\w\S*/g, function(txt) {
+                            return (
+                                txt.charAt(0).toUpperCase() +
+                                txt.substr(1).toLowerCase()
+                            );
+                        });
                         eventRepo
                             .addEvent(name, date, desc)
                             .then(() => {
@@ -47,7 +54,16 @@ class EventService {
         return new Promise((resolve, reject) => {
             return eventRepo
                 .getAllEvents()
-                .then(events => {
+                .then(result => {
+                    const events = [];
+                    result.forEach(event => {
+                        events.push({
+                            name: event.name,
+                            date: event.date,
+                            desc: event.description,
+                            eventURI: _.kebabCase(event.name)
+                        });
+                    });
                     return resolve(events);
                 })
                 .catch(() => {
@@ -57,6 +73,10 @@ class EventService {
     }
 
     async getEvent(name) {
+        name = _.lowerCase(name);
+        name = name.replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
         return new Promise((resolve, reject) => {
             eventRepo
                 .getEvent(name)

@@ -21,6 +21,7 @@ class UserRepo {
     }
 
     async getUsers(eventName, type) {
+        console.log(eventName, type);
         return new Promise((resolve, reject) => {
             User.find({ eventName: eventName, type: type }, (error, users) => {
                 if (error) {

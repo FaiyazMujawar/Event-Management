@@ -8,11 +8,12 @@
         Events
     </h4>
     <table class="table table-bordered table-hover">
-        <thead class="table-secondary">
+        <thead class="table-light">
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Event Name</th>
-                <th scope="col">Event Date</th>
+                <th scope="col">Name</th>
+                <th scope="col">Date</th>
+                <th scope="col">Description</th>
             </tr>
         </thead>
         <tbody>
@@ -20,10 +21,12 @@
             <% events.forEach(event=>{ %>
             <tr>
                 <th scope="row"><%= id %></th>
-                <td><a href=<%= `/events/event/${event.name}` %>><%= event.name %></a></td>
+                <td><a href=<%= `/events/event/${event.eventURI}` %>><%= event.name %></a></td>
                 <td><%= event.date %></td>
+                <td><%= event.desc %></td>
             </tr>
-            <% id++;}) %> <% }else { %>
+            <% id++;}) %> 
+            <% }else { %>
             <tr>
                 <td colspan="3"><h5>No Events!</h5></td>
             </tr>

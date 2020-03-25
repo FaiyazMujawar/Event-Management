@@ -1,7 +1,9 @@
 const router = require("express").Router();
+const _ = require("lodash");
 const coordinatorService = require("../services/CoordinatorService");
 const eventService = require("../services/EventService");
 const registrarService = require("../services/RegistrarService");
+const participantService = require("../services/ParticipantService");
 
 router.get("/", (req, res) => {
     if (req.isAuthenticated()) {
@@ -19,25 +21,42 @@ router.get("/", (req, res) => {
                 .getCoordinatorEvent(req.user.username)
                 .then(event => {
                     registrarService
-                        .getEventRegistrars(event.name)
+                        .getEventRegistrars(event.event.name)
                         .then(registrars => {
-                            res.render("CoordinatorEvent", {
-                                event: event,
-                                registrars: registrars
-                            });
+                            participantService
+                                .getAllParticipants(event.name)
+                                .then(participants => {
+                                    res.render("Coordinator", {
+                                        event: event.event,
+                                        eventURI: event.eventURI,
+                                        registrars: registrars,
+                                        participants: participants
+                                    });
+                                })
+                                .catch(() => {
+                                    res.render("Coordinator", {
+                                        event: event.event,
+                                        eventURI: event.eventURI,
+                                        registrars: registrars,
+                                        participants: undefined
+                                    });
+                                });
                         })
                         .catch(() => {
-                            res.render("CoordinatorEvent", {
-                                event: event,
-                                registrars: undefined
+                            res.render("Coordinator", {
+                                event: event.event,
+                                eventURI: event.eventURI,
+                                registrars: undefined,
+                                participants: undefined
                             });
                         });
                 })
                 .catch(() => {
-                    console.log("in coordEvent catch()");
-                    res.render("CoordinatorEvent", {
+                    res.render("Coordinator", {
                         event: undefined,
-                        coords: undefined
+                        eventURI: undefined,
+                        coords: undefined,
+                        participants: undefined
                     });
                 });
         }
@@ -47,28 +66,30 @@ router.get("/", (req, res) => {
 });
 
 router.get("/event/:eventName", (req, res) => {
-    if (req.isAuthenticated() && req.user.type === "admin") {
-        eventService
-            .getEvent(req.params.eventName)
-            .then(event => {
-                coordinatorService
-                    .getEventCoordinators(req.params.eventName)
-                    .then(coords => {
-                        res.render("AdminEvent", {
-                            event: event,
-                            coords: coords
+    if (req.isAuthenticated()) {
+        if (req.user.type === "admin") {
+            eventService
+                .getEvent(req.params.eventName)
+                .then(event => {
+                    coordinatorService
+                        .getEventCoordinators(req.params.eventName)
+                        .then(coords => {
+                            res.render("AdminEvent", {
+                                event: event,
+                                coords: coords
+                            });
+                        })
+                        .catch(() => {
+                            res.render("AdminEvent", {
+                                event: undefined,
+                                coords: undefined
+                            });
                         });
-                    })
-                    .catch(() => {
-                        res.render("AdminEvent", {
-                            event: undefined,
-                            coords: undefined
-                        });
-                    });
-            })
-            .catch(() => {
-                res.render("AdminEvent", { event: undefined });
-            });
+                })
+                .catch(() => {
+                    res.render("AdminEvent", { event: undefined });
+                });
+        }
     }
 });
 
@@ -82,7 +103,7 @@ router
         }
     })
     .post((req, res) => {
-        const {
+        let {
             eventName,
             date,
             desc,
@@ -91,6 +112,9 @@ router
             username,
             password
         } = req.body;
+        eventName = eventName.replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
         coordinatorService
             .addEventCoordinator(
                 firstName,
@@ -120,18 +144,14 @@ router
     .route("/event/:eventName/registrars")
     .get((req, res) => {
         if (req.isAuthenticated() && req.user.type === "coordinator") {
-            res.render("AddRegistrar", { eventName: req.params.eventName });
+            res.render("AddRegistrar");
         }
     })
     .post((req, res) => {
         if (req.isAuthenticated() && req.user.type === "coordinator") {
-            const {
-                firstName,
-                lastName,
-                username,
-                password,
-                eventName
-            } = req.body;
+            const { firstName, lastName, username, password } = req.body;
+            const eventName = req.user.eventName;
+            console.log("event", eventName);
             registrarService
                 .addRegistrar(
                     firstName,

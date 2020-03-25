@@ -1,5 +1,5 @@
-// const coordinatorRepo = require("../repos/CoordinatorRepo");
 const userRepo = require("../repos/UserRepo");
+const _ = require("lodash");
 
 class CoordinatorService {
     constructor() {}
@@ -14,7 +14,7 @@ class CoordinatorService {
         return new Promise((resolve, reject) => {
             userRepo
                 .existsByUsername(username)
-                .then(found => {
+                .then(() => {
                     const reply = {
                         status: false,
                         msg: "Username already exists!"
@@ -50,8 +50,12 @@ class CoordinatorService {
     }
 
     async getEventCoordinators(eventName) {
+        eventName = _.lowerCase(eventName);
+        eventName = eventName.replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
         return new Promise((resolve, reject) => {
-            return userRepo
+            userRepo
                 .getUsers(eventName, "coordinator")
                 .then(coords => {
                     return resolve(coords);
@@ -64,9 +68,13 @@ class CoordinatorService {
 
     async getCoordinatorEvent(username) {
         return new Promise((resolve, reject) => {
-            return userRepo
+            userRepo
                 .getUserEvent(username)
-                .then(event => {
+                .then(result => {
+                    const event = {
+                        event: result,
+                        eventURI: _.kebabCase(result.name)
+                    };
                     return resolve(event);
                 })
                 .catch(() => {

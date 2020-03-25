@@ -1,4 +1,3 @@
-// const registrarRepo = require("../repos/RegistrarRepo");
 const userRepo = require("../repos/UserRepo");
 
 class RegistrarService {
