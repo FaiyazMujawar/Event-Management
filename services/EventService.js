@@ -58,6 +58,7 @@ class EventService {
                     const events = [];
                     result.forEach(event => {
                         events.push({
+                            id: event._id,
                             name: event.name,
                             date: event.date,
                             desc: event.description,
@@ -73,18 +74,41 @@ class EventService {
     }
 
     async getEvent(name) {
+        console.log(name);
         name = _.lowerCase(name);
         name = name.replace(/\w\S*/g, function(txt) {
             return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
         });
+        console.log(name);
         return new Promise((resolve, reject) => {
             eventRepo
                 .getEvent(name)
                 .then(event => {
+                    console.log("event", event);
                     return resolve(event);
                 })
                 .catch(() => {
+                    console.log("event~");
                     return reject(null);
+                });
+        });
+    }
+
+    async deleteEvent(name) {
+        return new Promise((resolve, reject) => {
+            eventRepo
+                .deleteEvent(name)
+                .then(() => {
+                    return resolve({
+                        status: true,
+                        msg: "Event deleted!"
+                    });
+                })
+                .catch(() => {
+                    return reject({
+                        status: false,
+                        msg: "Event not deleted!"
+                    });
                 });
         });
     }

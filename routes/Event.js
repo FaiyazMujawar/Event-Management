@@ -93,14 +93,68 @@ router
                             });
                     })
                     .catch(() => {
-                        res.render("AdminEvent", { event: undefined });
+                        res.render("AdminEvent", {
+                            event: undefined,
+                            coords: undefined
+                        });
                     });
             }
         }
     })
     .post((req, res) => {
         if (req.isAuthenticated()) {
-            if (req.user.type === "registrar") {
+            if (req.user.type === "admin") {
+                if (req.body.action === "delete") {
+                    const eventName = req.body.eventName;
+                    eventService
+                        .deleteEvent(eventName)
+                        .then(() => {
+                            coordinatorService
+                                .deleteAllCorrdinators(eventName)
+                                .then(() => {
+                                    registrarService
+                                        .deleteAllRegistrars(eventName)
+                                        .then(() => {
+                                            participantService
+                                                .deleteAllParticipants(
+                                                    eventName
+                                                )
+                                                .then(() => {
+                                                    res.send({
+                                                        status: true,
+                                                        msg: "Event deleted"
+                                                    });
+                                                })
+                                                .catch(() => {
+                                                    res.send({
+                                                        status: true,
+                                                        msg:
+                                                            "Event deleted,participants not deleted"
+                                                    });
+                                                });
+                                        })
+                                        .catch(() => {
+                                            res.send({
+                                                status: true,
+                                                msg:
+                                                    "Event deleted,registrars not deleted"
+                                            });
+                                        });
+                                })
+                                .catch(() => {
+                                    res.send({
+                                        status: false,
+                                        msg:
+                                            "Event deleted,co-ordiantors deletion failed"
+                                    });
+                                });
+                        })
+                        .catch(error => {
+                            res.send(error);
+                        });
+                } else {
+                }
+            } else if (req.user.type === "registrar") {
                 const { firstName, lastName, email, contact } = req.body;
                 participantService
                     .addParticipant(

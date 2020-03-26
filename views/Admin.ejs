@@ -12,8 +12,9 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
-                <th scope="col">Date</th>
                 <th scope="col">Description</th>
+                <th scope="col">Date</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
@@ -22,8 +23,12 @@
             <tr>
                 <th scope="row"><%= id %></th>
                 <td><a href=<%= `/events/event/${event.eventURI}` %>><%= event.name %></a></td>
-                <td><%= event.date %></td>
                 <td><%= event.desc %></td>
+                <td><%= event.date %></td>
+                <td><form method="post" action=<%= `/events/event/${event.eventURI}` %>>
+                    <input type="hidden" name="eventName" value="<%= event.name %>">
+                    <button name="action" value="delete" type="submit" class="btn btn-sm btn-link text-danger"><i class="far fa-trash-alt"></i></button>
+                </form></i></td>
             </tr>
             <% id++;}) %> 
             <% }else { %>

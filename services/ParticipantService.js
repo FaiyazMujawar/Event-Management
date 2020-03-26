@@ -49,6 +49,19 @@ class ParticipantService {
                 });
         });
     }
+
+    async deleteAllParticipants(eventName) {
+        return new Promise((resolve, reject) => {
+            participantRepo
+                .deleteParticipants(eventName)
+                .then(() => {
+                    return resolve(true);
+                })
+                .catch(() => {
+                    return reject(false);
+                });
+        });
+    }
 }
 
 module.exports = new ParticipantService();

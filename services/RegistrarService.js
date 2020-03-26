@@ -35,6 +35,19 @@ class RegistrarService {
                 });
         });
     }
+
+    async deleteAllRegistrars(eventName) {
+        return new Promise((resolve, reject) => {
+            userRepo
+                .deleteAllUsers(eventName, "registrar")
+                .then(() => {
+                    return resolve(true);
+                })
+                .catch(() => {
+                    return reject(false);
+                });
+        });
+    }
 }
 
 module.exports = new RegistrarService();

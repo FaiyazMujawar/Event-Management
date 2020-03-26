@@ -70,6 +70,18 @@ class EventRepo {
             });
         });
     }
+
+    async deleteEvent(eventName) {
+        return new Promise((resolve, reject) => {
+            Event.deleteOne({ name: eventName }, error => {
+                if (error) {
+                    return reject(false);
+                } else {
+                    return resolve(true);
+                }
+            });
+        });
+    }
 }
 
 module.exports = new EventRepo();

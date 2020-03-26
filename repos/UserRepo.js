@@ -97,6 +97,18 @@ class UserRepo {
             );
         });
     }
+
+    async deleteAllUsers(eventName, type) {
+        return new Promise((resolve, reject) => {
+            User.deleteMany({ eventName: eventName, type: type }, error => {
+                if (error) {
+                    return reject(false);
+                } else {
+                    return resolve(true);
+                }
+            });
+        });
+    }
 }
 
 module.exports = new UserRepo();
