@@ -71,6 +71,32 @@ class EventRepo {
         });
     }
 
+    async updateEvent(oldname, name, date, desc) {
+        return new Promise((resolve, reject) => {
+            Event.findOneAndUpdate(
+                { name: oldname },
+                { name: name, date: date, description: desc },
+                (error, result) => {
+                    if (error) {
+                        return reject({
+                            status: null,
+                            msg: error
+                        });
+                    } else {
+                        if (!result) {
+                            return reject({
+                                status: false,
+                                msg: "Event not updated!"
+                            });
+                        } else {
+                            return resolve(true);
+                        }
+                    }
+                }
+            );
+        });
+    }
+
     async deleteEvent(eventName) {
         return new Promise((resolve, reject) => {
             Event.deleteOne({ name: eventName }, error => {

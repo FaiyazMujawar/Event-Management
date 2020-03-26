@@ -35,6 +35,8 @@ mongoose
     .then(() => console.log("Connected to MongoDB"))
     .catch(error => console.log(error));
 
+mongoose.set("useFindAndModify", false);
+
 app.use("/users/", require("./routes/Login.js"));
 app.use("/events/", require("./routes/Event"));
 
