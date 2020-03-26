@@ -153,6 +153,15 @@ router
                             res.send(error);
                         });
                 } else {
+                    const { oldname, eventName, date, desc } = req.body;
+                    eventService
+                        .updateEvent(oldname, eventName, date, desc)
+                        .then(response => {
+                            res.send(response);
+                        })
+                        .catch(error => {
+                            res.send(error);
+                        });
                 }
             } else if (req.user.type === "registrar") {
                 const { firstName, lastName, email, contact } = req.body;

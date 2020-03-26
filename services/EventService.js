@@ -112,6 +112,19 @@ class EventService {
                 });
         });
     }
+
+    async updateEvent(oldname, name, date, desc) {
+        return new Promise((resolve, reject) => {
+            eventRepo
+                .updateEvent(oldname, name, date, desc)
+                .then(response => {
+                    return resolve(response);
+                })
+                .catch(error => {
+                    return reject(error);
+                });
+        });
+    }
 }
 
 module.exports = new EventService();
