@@ -1,68 +1,17 @@
 const router = require("express").Router();
 const _ = require("lodash");
-const coordinatorService = require("../services/CoordinatorService");
-const eventService = require("../services/EventService");
-const registrarService = require("../services/RegistrarService");
-const participantService = require("../services/ParticipantService");
+const Admin = require("../controllers/AdminController");
+const Coordinator = require("../controllers/CoordinatorController");
+const Registrar = require("../controllers/RegistrarController");
 
 router.get("/", (req, res) => {
     if (req.isAuthenticated()) {
         if (req.user.type === "admin") {
-            eventService
-                .getEvents()
-                .then(events => {
-                    res.render("Admin", { events: events });
-                })
-                .catch(() => {
-                    res.render("Admin", { events: undefined });
-                });
+            Admin.getAllEvents(res);
         } else if (req.user.type === "coordinator") {
-            coordinatorService
-                .getCoordinatorEvent(req.user.username)
-                .then(event => {
-                    registrarService
-                        .getEventRegistrars(event.event.name)
-                        .then(registrars => {
-                            participantService
-                                .getAllParticipants(event.name)
-                                .then(participants => {
-                                    res.render("Coordinator", {
-                                        event: event.event,
-                                        eventURI: event.eventURI,
-                                        registrars: registrars,
-                                        participants: participants
-                                    });
-                                })
-                                .catch(() => {
-                                    res.render("Coordinator", {
-                                        event: event.event,
-                                        eventURI: event.eventURI,
-                                        registrars: registrars,
-                                        participants: undefined
-                                    });
-                                });
-                        })
-                        .catch(() => {
-                            res.render("Coordinator", {
-                                event: event.event,
-                                eventURI: event.eventURI,
-                                registrars: undefined,
-                                participants: undefined
-                            });
-                        });
-                })
-                .catch(() => {
-                    res.render("Coordinator", {
-                        event: undefined,
-                        eventURI: undefined,
-                        coords: undefined,
-                        participants: undefined
-                    });
-                });
+            Coordinator.getEvent(req, res);
         } else if (req.user.type === "registrar") {
-            res.render("Registrar", {
-                eventURI: _.kebabCase(req.user.eventName)
-            });
+            Registrar.getEvent(res);
         }
     } else {
         res.redirect("/users/login");
@@ -74,30 +23,7 @@ router
     .get((req, res) => {
         if (req.isAuthenticated()) {
             if (req.user.type === "admin") {
-                eventService
-                    .getEvent(req.params.eventName)
-                    .then(event => {
-                        coordinatorService
-                            .getEventCoordinators(req.params.eventName)
-                            .then(coords => {
-                                res.render("AdminEvent", {
-                                    event: event,
-                                    coords: coords
-                                });
-                            })
-                            .catch(() => {
-                                res.render("AdminEvent", {
-                                    event: undefined,
-                                    coords: undefined
-                                });
-                            });
-                    })
-                    .catch(() => {
-                        res.render("AdminEvent", {
-                            event: undefined,
-                            coords: undefined
-                        });
-                    });
+                Admin.getEvent(req, res);
             }
         }
     })
@@ -105,81 +31,12 @@ router
         if (req.isAuthenticated()) {
             if (req.user.type === "admin") {
                 if (req.body.action === "delete") {
-                    const eventName = req.body.eventName;
-                    eventService
-                        .deleteEvent(eventName)
-                        .then(() => {
-                            coordinatorService
-                                .deleteAllCorrdinators(eventName)
-                                .then(() => {
-                                    registrarService
-                                        .deleteAllRegistrars(eventName)
-                                        .then(() => {
-                                            participantService
-                                                .deleteAllParticipants(
-                                                    eventName
-                                                )
-                                                .then(() => {
-                                                    res.send({
-                                                        status: true,
-                                                        msg: "Event deleted"
-                                                    });
-                                                })
-                                                .catch(() => {
-                                                    res.send({
-                                                        status: true,
-                                                        msg:
-                                                            "Event deleted,participants not deleted"
-                                                    });
-                                                });
-                                        })
-                                        .catch(() => {
-                                            res.send({
-                                                status: true,
-                                                msg:
-                                                    "Event deleted,registrars not deleted"
-                                            });
-                                        });
-                                })
-                                .catch(() => {
-                                    res.send({
-                                        status: false,
-                                        msg:
-                                            "Event deleted,co-ordiantors deletion failed"
-                                    });
-                                });
-                        })
-                        .catch(error => {
-                            res.send(error);
-                        });
+                    Admin.deleteEvent(req, res);
                 } else {
-                    const { oldname, eventName, date, desc } = req.body;
-                    eventService
-                        .updateEvent(oldname, eventName, date, desc)
-                        .then(response => {
-                            res.send(response);
-                        })
-                        .catch(error => {
-                            res.send(error);
-                        });
+                    Admin.updateEvent(req, res);
                 }
             } else if (req.user.type === "registrar") {
-                const { firstName, lastName, email, contact } = req.body;
-                participantService
-                    .addParticipant(
-                        firstName,
-                        lastName,
-                        email,
-                        contact,
-                        req.user.eventName
-                    )
-                    .then(response => {
-                        console.log("msg:", response.msg);
-                    })
-                    .catch(error => {
-                        console.log("msg:", error.msg);
-                    });
-                res.redirect(`/events/event/${req.params.eventName}`);
+                Registrar.addParticipant(req, res);
             }
         } else {
             res.redirect("/users/login");
@@ -196,69 +53,22 @@ router
         }
     })
     .post((req, res) => {
-        let {
-            eventName,
-            date,
-            desc,
-            firstName,
-            lastName,
-            username,
-            password
-        } = req.body;
-        eventName = eventName.replace(/\w\S*/g, function(txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        });
-        coordinatorService
-            .addEventCoordinator(
-                firstName,
-                lastName,
-                username,
-                password,
-                eventName
-            )
-            .then(response => {
-                console.log("msg:", response.msg);
-                eventService
-                    .addEvent(eventName, date, desc)
-                    .then(reply => {
-                        console.log("msg", reply.msg);
-                    })
-                    .catch(err => {
-                        console.log("msg", err.msg);
-                    });
-            })
-            .catch(error => {
-                console.log("msg", error.msg);
-            });
-        res.send("yep");
+        Admin.addEvent(req, res);
     });
 
 router
     .route("/event/:eventName/registrars")
     .get((req, res) => {
         if (req.isAuthenticated() && req.user.type === "coordinator") {
-            res.render("AddRegistrar");
+            res.render("AddRegistrar", {
+                eventName: _.kebabCase(req.user.eventName)
+            });
         }
     })
     .post((req, res) => {
         if (req.isAuthenticated() && req.user.type === "coordinator") {
-            const { firstName, lastName, username, password } = req.body;
-            const eventName = req.user.eventName;
-            console.log("event", eventName);
-            registrarService
-                .addRegistrar(
-                    firstName,
-                    lastName,
-                    username,
-                    password,
-                    eventName
-                )
-                .then(response => {
-                    res.send(response);
-                })
-                .catch(error => {
-                    res.send(error);
-                });
+            console.log("here");
+            Coordinator.addRegistrar(req, res);
         } else {
         }
     });
