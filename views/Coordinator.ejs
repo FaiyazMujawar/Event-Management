@@ -22,7 +22,7 @@
     <div>
         <h3>
             Registrar:
-            <a class="btn btn-sm" href=<%=` /events/event/${eventURI}/registrars` %>>Add Registrar</a>
+            <a class="btn btn-sm" href=<%=`/events/event/${eventURI}/registrars` %>>Add Registrar</a>
         </h3>
     </div>
     <table class="table table-bordered table-hover">
@@ -31,6 +31,7 @@
                 <th scope="col">#</th>
                 <th scope="col">Registrar Name</th>
                 <th scope="col">Username</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
@@ -40,10 +41,18 @@
                 <th scope="row"><%= id %></th>
                 <td><%= registrar.firstName %> <%= registrar.lastName %></td>
                 <td><%= registrar.username %></td>
+                <td><form method="post" action=<%= `/events/event/${eventURI}/registrars` %>>
+                    <input type="hidden" name="username" value="<%= registrar.username %>">
+                    <input type="hidden" name="eventName" value="<%= registrar.eventName %>">
+                    <button name="action" value="delete" type="submit" class="btn btn-sm btn-link text-danger"><i
+                            class="far fa-trash-alt"></i></button>
+                </form></td>
             </tr>
             <% id++;}) %> <% }else { %>
             <tr>
-                <td colspan="3"><h5>No registrars!</h5></td>
+                <td colspan="3">
+                    <h5>No registrars!</h5>
+                </td>
             </tr>
             <% } %>
         </tbody>
@@ -60,6 +69,7 @@
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
                 <th scope="col">Contact</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
@@ -70,10 +80,17 @@
                 <td><%= participant.firstName %> <%= participant.lastName %></td>
                 <td><%= participant.email %></td>
                 <td><%= participant.contact %></td>
+                <td><form method="post" action=<%= `/events/event/${eventURI}/participants` %>>
+                    <input type="hidden" name="eventName" value="<%= event.name %>">
+                    <input type="hidden" name="email" value="<%= participant.email %>">
+                    <button name="action" value="delete" type="submit" class="btn btn-sm btn-link text-danger"><i class="far fa-trash-alt"></i></button>
+                </form></td>
             </tr>
             <% id++;}) %> <% }else { %>
             <tr>
-                <td colspan="4"><h5>No registrars!</h5></td>
+                <td colspan="4">
+                    <h5>No registrars!</h5>
+                </td>
             </tr>
             <% } %>
         </tbody>

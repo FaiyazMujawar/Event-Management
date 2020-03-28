@@ -73,6 +73,21 @@ class ParticipantRepo {
         });
     }
 
+    async deleteParticipant(eventName, email) {
+        return new Promise((resolve, reject) => {
+            Participant.deleteOne(
+                { eventName: eventName, email: email },
+                error => {
+                    if (error) {
+                        return reject(false);
+                    } else {
+                        return resolve(true);
+                    }
+                }
+            );
+        });
+    }
+
     async deleteParticipants(eventName) {
         return new Promise((resolve, reject) => {
             Participant.deleteMany({ eventName: eventName }, error => {

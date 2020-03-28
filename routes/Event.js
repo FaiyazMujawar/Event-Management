@@ -35,8 +35,6 @@ router
                 } else {
                     Admin.updateEvent(req, res);
                 }
-            } else if (req.user.type === "registrar") {
-                Registrar.addParticipant(req, res);
             }
         } else {
             res.redirect("/users/login");
@@ -66,11 +64,28 @@ router
         }
     })
     .post((req, res) => {
-        if (req.isAuthenticated() && req.user.type === "coordinator") {
-            console.log("here");
-            Coordinator.addRegistrar(req, res);
+        if (req.isAuthenticated()) {
+            if (req.user.type === "coordinator") {
+                if (req.body.action === "delete") {
+                    Coordinator.deleteRegistrar(req, res);
+                } else {
+                    Coordinator.addRegistrar(req, res);
+                }
+            }
         } else {
         }
     });
+
+router.route("/event/:eventName/participants").post((req, res) => {
+    if (req.isAuthenticated()) {
+        if (req.user.type === "coordinator") {
+            if (req.body.action === "delete") {
+                Coordinator.deleteParticipant(req, res);
+            }
+        }
+    } else {
+        res.redirect("/users/login");
+    }
+});
 
 module.exports = router;

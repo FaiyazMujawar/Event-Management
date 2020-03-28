@@ -36,6 +36,20 @@ class RegistrarService {
         });
     }
 
+    async deleteRegistrar(eventName, username) {
+        console.log(eventName, username);
+        return new Promise((resolve, reject) => {
+            userRepo
+                .deleteUser(eventName, username)
+                .then(() => {
+                    return resolve(true);
+                })
+                .catch(() => {
+                    return reject(false);
+                });
+        });
+    }
+
     async deleteAllRegistrars(eventName) {
         return new Promise((resolve, reject) => {
             userRepo

@@ -97,6 +97,21 @@ class UserRepo {
         });
     }
 
+    async deleteUser(eventName, username) {
+        return new Promise((resolve, reject) => {
+            User.deleteOne(
+                { eventName: eventName, username: username },
+                error => {
+                    if (error) {
+                        return reject(false);
+                    } else {
+                        return resolve(true);
+                    }
+                }
+            );
+        });
+    }
+
     async deleteAllUsers(eventName, type) {
         return new Promise((resolve, reject) => {
             User.deleteMany({ eventName: eventName, type: type }, error => {

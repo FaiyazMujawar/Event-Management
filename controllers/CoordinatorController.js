@@ -13,8 +13,10 @@ class Coordinator {
                     .getEventRegistrars(event.event.name)
                     .then(registrars => {
                         participantService
-                            .getAllParticipants(event.name)
+                            .getAllParticipants(event.event.name)
                             .then(participants => {
+                                console.log(event);
+                                console.log(event.eventURI);
                                 res.render("Coordinator", {
                                     event: event.event,
                                     eventURI: event.eventURI,
@@ -23,6 +25,7 @@ class Coordinator {
                                 });
                             })
                             .catch(() => {
+                                console.log(event);
                                 res.render("Coordinator", {
                                     event: event.event,
                                     eventURI: event.eventURI,
@@ -61,6 +64,42 @@ class Coordinator {
             })
             .catch(error => {
                 res.send(error);
+            });
+    }
+
+    deleteRegistrar(req, res) {
+        const { eventName, username } = req.body;
+        registrarService
+            .deleteRegistrar(eventName, username)
+            .then(() => {
+                res.send({
+                    status: true,
+                    msg: "Registrar Deleted"
+                });
+            })
+            .catch(() => {
+                res.send({
+                    status: false,
+                    msg: "Registrar not Deleted"
+                });
+            });
+    }
+
+    deleteParticipant(req, res) {
+        const { eventName, email } = req.body;
+        participantService
+            .deleteParticipant(eventName, email)
+            .then(() => {
+                res.send({
+                    status: true,
+                    msg: "Participant Deleted"
+                });
+            })
+            .catch(() => {
+                res.send({
+                    status: true,
+                    msg: "Participant Deleted"
+                });
             });
     }
 }

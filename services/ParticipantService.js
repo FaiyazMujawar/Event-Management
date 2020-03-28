@@ -50,6 +50,19 @@ class ParticipantService {
         });
     }
 
+    async deleteParticipant(eventName, email) {
+        return new Promise((resolve, reject) => {
+            participantRepo
+                .deleteParticipant(eventName, email)
+                .then(() => {
+                    return resolve(true);
+                })
+                .catch(() => {
+                    return reject(false);
+                });
+        });
+    }
+
     async deleteAllParticipants(eventName) {
         return new Promise((resolve, reject) => {
             participantRepo
