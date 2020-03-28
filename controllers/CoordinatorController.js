@@ -1,6 +1,7 @@
 const coordinatorService = require("../services/CoordinatorService");
 const registrarService = require("../services/RegistrarService");
 const participantService = require("../services/ParticipantService");
+const _ = require("lodash");
 
 class Coordinator {
     constructor() {}
@@ -15,8 +16,6 @@ class Coordinator {
                         participantService
                             .getAllParticipants(event.event.name)
                             .then(participants => {
-                                console.log(event);
-                                console.log(event.eventURI);
                                 res.render("Coordinator", {
                                     event: event.event,
                                     eventURI: event.eventURI,
@@ -85,21 +84,39 @@ class Coordinator {
             });
     }
 
+    async addParticipant(req) {
+        return new Promise((resolve, reject) => {
+            const { firstName, lastName, email, contact } = req.body;
+            participantService
+                .addParticipant(
+                    firstName,
+                    lastName,
+                    email,
+                    contact,
+                    req.user.eventName
+                )
+                .then(response => {
+                    return resolve(response);
+                })
+                .catch(error => {
+                    return reject(error);
+                });
+        });
+    }
+
     deleteParticipant(req, res) {
         const { eventName, email } = req.body;
         participantService
             .deleteParticipant(eventName, email)
             .then(() => {
-                res.send({
-                    status: true,
-                    msg: "Participant Deleted"
-                });
+                res.redirect(
+                    `/events/event/${_.kebabCase(req.user.eventName)}`
+                );
             })
             .catch(() => {
-                res.send({
-                    status: true,
-                    msg: "Participant Deleted"
-                });
+                res.redirect(
+                    `/events/event/${_.kebabCase(req.user.eventName)}`
+                );
             });
     }
 }

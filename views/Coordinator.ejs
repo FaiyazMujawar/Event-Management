@@ -19,17 +19,57 @@
         </div>
     </div>
     <% } %>
-    <div>
-        <h3>
-            Registrar:
-            <a class="btn btn-sm" href=<%=`/events/event/${eventURI}/registrars` %>>Add Registrar</a>
-        </h3>
+    <h5 class="text-left">
+        Registrar:
+        <!-- Add Registrar Button -->
+        <button data-toggle="modal" data-target="#addRegistrar" class="btn btn-link btn-sm text-muted"><i
+                class="fas fa-user-plus"></i></button>
+    </h5>
+    <!-- Add Registrar Modal -->
+    <div class="modal fade" id="addRegistrar" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content modal-content-centered modal-md">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h5 class="card-title">Add Registrar</h5>
+                    <form method="post" action=<%= `/events/event/${event.eventURI}/registrars` %>>
+                        <div class="input-group">
+                            <input type="text" name="firstName" class="form-control" placeholder="First Name..."
+                                required />
+                        </div>
+                        <br>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="lastName" placeholder="Last Name..."
+                                required />
+                        </div>
+                        <br>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="username" placeholder="Username..."
+                                required />
+                        </div>
+                        <br>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="password" placeholder="Password..."
+                                required />
+                        </div>
+                        <br>
+                        <input class="btn btn-md btn-primary" type="submit" value="Submit">
+                        <button class="btn btn-md btn-secondary" type="reset">Clear</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Registrars Table -->
+
     <table class="table table-bordered table-hover">
         <thead class="table-light">
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Registrar Name</th>
+                <th scope="col">Name</th>
                 <th scope="col">Username</th>
                 <th scope="col"></th>
             </tr>
@@ -41,12 +81,14 @@
                 <th scope="row"><%= id %></th>
                 <td><%= registrar.firstName %> <%= registrar.lastName %></td>
                 <td><%= registrar.username %></td>
-                <td><form method="post" action=<%= `/events/event/${eventURI}/registrars` %>>
-                    <input type="hidden" name="username" value="<%= registrar.username %>">
-                    <input type="hidden" name="eventName" value="<%= registrar.eventName %>">
-                    <button name="action" value="delete" type="submit" class="btn btn-sm btn-link text-danger"><i
-                            class="far fa-trash-alt"></i></button>
-                </form></td>
+                <td>
+                    <form method="post" action=<%= `/events/event/${eventURI}/registrars` %>>
+                        <input type="hidden" name="username" value="<%= registrar.username %>">
+                        <input type="hidden" name="eventName" value="<%= registrar.eventName %>">
+                        <button name="action" value="delete" type="submit" class="btn btn-sm btn-link text-danger"><i
+                                class="far fa-trash-alt"></i></button>
+                    </form>
+                </td>
             </tr>
             <% id++;}) %> <% }else { %>
             <tr>
@@ -57,11 +99,54 @@
             <% } %>
         </tbody>
     </table>
-    <div>
-        <h3>
-            Participants:
-        </h3>
+    <h5 class="text-left">
+        Participants:
+        <!-- <a class="btn btn-sm btn-link text-default" href=<%=`/events/event/${eventURI}/registrars` %>><i
+                    class="fas fa-user-plus"></i></a> -->
+        <button data-toggle="modal" data-target="#addParticipant" class="btn btn-link btn-sm text-muted"><i
+                class="fas fa-user-plus"></i></button>
+    </h5>
+
+    <!-- Add Participant Modal -->
+
+    <div class="modal fade" id="addParticipant" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content modal-content-centered modal-md">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h5 class="card-title">Add Participant</h5>
+                    <form method="post" action=<%= `/events/event/${event.eventURI}/participants` %>>
+                        <div class="input-group">
+                            <input type="text" name="firstName" class="form-control" placeholder="First Name..."
+                                required />
+                        </div>
+                        <br>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="lastName" placeholder="Last Name..."
+                                required />
+                        </div>
+                        <br>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="email" placeholder="Email..." required />
+                        </div>
+                        <br>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="contact" placeholder="Contact..." required />
+                        </div>
+                        <br>
+                        <input class="btn btn-md btn-primary" type="submit" value="Submit">
+                        <button class="btn btn-md btn-secondary" type="reset">Clear</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+
+
+    <!-- Participants Table -->
+
     <table class="table table-bordered table-hover">
         <thead class="table-light">
             <tr>
@@ -80,11 +165,14 @@
                 <td><%= participant.firstName %> <%= participant.lastName %></td>
                 <td><%= participant.email %></td>
                 <td><%= participant.contact %></td>
-                <td><form method="post" action=<%= `/events/event/${eventURI}/participants` %>>
-                    <input type="hidden" name="eventName" value="<%= event.name %>">
-                    <input type="hidden" name="email" value="<%= participant.email %>">
-                    <button name="action" value="delete" type="submit" class="btn btn-sm btn-link text-danger"><i class="far fa-trash-alt"></i></button>
-                </form></td>
+                <td>
+                    <form method="post" action=<%= `/events/event/${eventURI}/participants` %>>
+                        <input type="hidden" name="eventName" value="<%= event.name %>">
+                        <input type="hidden" name="email" value="<%= participant.email %>">
+                        <button name="action" value="delete" type="submit" class="btn btn-sm btn-link text-danger"><i
+                                class="far fa-trash-alt"></i></button>
+                    </form>
+                </td>
             </tr>
             <% id++;}) %> <% }else { %>
             <tr>

@@ -9,9 +9,11 @@ router.get("/", (req, res) => {
         if (req.user.type === "admin") {
             Admin.getAllEvents(res);
         } else if (req.user.type === "coordinator") {
-            Coordinator.getEvent(req, res);
+            res.redirect(`/events/event/${_.kebabCase(req.user.eventName)}`);
         } else if (req.user.type === "registrar") {
-            Registrar.getEvent(res);
+            res.redirect(
+                `/events/event/${_.kebabCase(req.user.eventName)}/participants`
+            );
         }
     } else {
         res.redirect("/users/login");
@@ -24,6 +26,8 @@ router
         if (req.isAuthenticated()) {
             if (req.user.type === "admin") {
                 Admin.getEvent(req, res);
+            } else if (req.user.type === "coordinator") {
+                Coordinator.getEvent(req, res);
             }
         }
     })
@@ -76,16 +80,64 @@ router
         }
     });
 
-router.route("/event/:eventName/participants").post((req, res) => {
-    if (req.isAuthenticated()) {
-        if (req.user.type === "coordinator") {
-            if (req.body.action === "delete") {
-                Coordinator.deleteParticipant(req, res);
-            }
+router
+    .route("/event/:eventName/participants")
+    .get((req, res) => {
+        if (req.isAuthenticated()) {
+            res.render("AddParticipant", {
+                type: "",
+                msg: undefined,
+                eventName: req.user.eventName,
+                eventURI: _.kebabCase(req.user.eventName)
+            });
+        } else {
+            res.redirect("/users/login");
         }
-    } else {
-        res.redirect("/users/login");
-    }
-});
+    })
+    .post((req, res) => {
+        if (req.isAuthenticated()) {
+            if (req.user.type === "coordinator") {
+                if (req.body.action === "delete") {
+                    Coordinator.deleteParticipant(req, res);
+                } else {
+                    Coordinator.addParticipant(req)
+                        .then(response => {
+                            res.redirect(
+                                `/events/event/${_.kebabCase(
+                                    req.user.eventName
+                                )}`
+                            );
+                        })
+                        .catch(error => {
+                            res.redirect(
+                                `/events/event/${_.kebabCase(
+                                    req.user.eventName
+                                )}`
+                            );
+                        });
+                }
+            } else if (req.user.type === "registrar") {
+                Registrar.addParticipant(req, res)
+                    .then(response => {
+                        res.render("AddParticipant", {
+                            status: true,
+                            msg: response.msg,
+                            eventName: req.user.eventName,
+                            eventURI: _.kebabCase(req.user.eventName)
+                        });
+                    })
+                    .catch(error => {
+                        res.render("AddParticipant", {
+                            status: false,
+                            msg: error.msg,
+                            eventName: req.user.eventName,
+                            eventURI: _.kebabCase(req.user.eventName)
+                        });
+                    });
+            }
+        } else {
+            res.redirect("/users/login");
+        }
+    });
 
 module.exports = router;
