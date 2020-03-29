@@ -1,30 +1,37 @@
 <%- include("partials/header") -%>
 <div class="container">
-    <h3>
+    <h3 class="text-left">
         Event Details:
     </h3>
     <br />
     <% if(event !== undefined){ %>
     <div class="card">
-        <h5 class="card-header card-header-rose"><b><%= event.name %></b></h5>
+        <h4 class="card-header card-header-rose"><b><%= event.name %></b></h4>
         <div class="card-body">
             <p class="card-text">
-                <h5>
+                <h6 class="text-left">
                     <b>Date:</b> <%= event.date %>
-                </h5>
-                <h5>
+                </h6>
+                <h6 class="text-left">
                     <b>Description:</b> <%= event.description %>
-                </h5>
+                </h6>
             </p>
         </div>
     </div>
     <% } %>
-    <h5 class="text-left">
-        Registrar:
-        <!-- Add Registrar Button -->
-        <button data-toggle="modal" data-target="#addRegistrar" class="btn btn-link btn-sm text-muted"><i
-                class="fas fa-user-plus"></i></button>
-    </h5>
+    <div class="row">
+        <div class="col-10">
+            <h5 class="text-left lead">
+                Registrar:
+                <!-- Add Registrar Button -->
+                <button data-toggle="modal" data-target="#addRegistrar" class="btn btn-link btn-sm text-muted"><i
+                        class="fas fa-user-plus"></i></button>
+            </h5>
+        </div>
+        <div class="col-2 lead text-muted text-right">
+            Total: <%= (registrars!==undefined)?registrars.length:"0" %>
+        </div>
+    </div>
     <!-- Add Registrar Modal -->
     <div class="modal fade" id="addRegistrar" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -75,7 +82,7 @@
             </tr>
         </thead>
         <tbody>
-            <% if(registrars !== undefined){ %> <% let id=1; %>
+            <% if(registrars !== undefined && registrars.length>0){ %> <% let id=1; %>
             <% registrars.forEach(registrar=>{ %>
             <tr>
                 <th scope="row"><%= id %></th>
@@ -92,20 +99,26 @@
             </tr>
             <% id++;}) %> <% }else { %>
             <tr>
-                <td colspan="3">
-                    <h5>No registrars!</h5>
+                <td colspan="4">
+                    <h5 class="text-muted">No registrars!</h5>
                 </td>
             </tr>
             <% } %>
         </tbody>
     </table>
-    <h5 class="text-left">
-        Participants:
-        <!-- <a class="btn btn-sm btn-link text-default" href=<%=`/events/event/${eventURI}/registrars` %>><i
-                    class="fas fa-user-plus"></i></a> -->
-        <button data-toggle="modal" data-target="#addParticipant" class="btn btn-link btn-sm text-muted"><i
-                class="fas fa-user-plus"></i></button>
-    </h5>
+    <div class="row">
+        <div class="col-10">
+            <h5 class="text-left lead">
+                Participants:
+                <!-- Add Registrar Button -->
+                <button data-toggle="modal" data-target="#addParticipant" class="btn btn-link btn-sm text-muted"><i
+                        class="fas fa-user-plus"></i></button>
+            </h5>
+        </div>
+        <div class="col-2 lead text-muted text-right">
+            Total: <%= (participants!==undefined)?participants.length:"0" %>
+        </div>
+    </div>
 
     <!-- Add Participant Modal -->
 
@@ -158,7 +171,7 @@
             </tr>
         </thead>
         <tbody>
-            <% if(participants !== undefined){ %> <% let id=1; %>
+            <% if(participants !== undefined && participants.length>0){ %> <% let id=1; %>
             <% participants.forEach(participant=>{ %>
             <tr>
                 <th scope="row"><%= id %></th>
@@ -176,8 +189,8 @@
             </tr>
             <% id++;}) %> <% }else { %>
             <tr>
-                <td colspan="4">
-                    <h5>No registrars!</h5>
+                <td colspan="5">
+                    <h5 class="text-muted">No registrars!</h5>
                 </td>
             </tr>
             <% } %>

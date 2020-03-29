@@ -1,53 +1,29 @@
 <%- include("partials/header") -%>
-<div class="container">
-    <form method="post" class="form" action=<%= `/events/event/${eventURI}/participants` %> >
+<div class="container register">
+    <form method="post" class="form" action=<%= `/events/event/${eventURI}/participants` %>>
         <div class="card card-body">
             <div class="card-title">
                 <h3>Add Participant</h3>
             </div>
             <div class="input-group">
-                <input
-                    type="text"
-                    name="firstName"
-                    class="form-control"
-                    placeholder="First Name..."
-                    required
-                />
+                <input type="text" name="firstName" class="form-control" placeholder="First Name..." required />
             </div>
+            <br>
             <div class="input-group">
-                <input
-                    type="text"
-                    name="lastName"
-                    class="form-control"
-                    placeholder="Last Name..."
-                    required
-                />
+                <input type="text" name="lastName" class="form-control" placeholder="Last Name..." required />
             </div>
+            <br>
             <div class="input-group">
-                <input
-                    type="email"
-                    class="form-control"
-                    name="email"
-                    placeholder="Email..."
-                    required
-                />
+                <input type="email" class="form-control" name="email" placeholder="Email..." required />
             </div>
+            <br>
             <div class="input-group">
-                <input
-                    type="text"
-                    class="form-control"
-                    name="contact"
-                    placeholder="Contact..."
-                    required
-                />
+                <input type="text" class="form-control" name="contact" placeholder="Contact..." required />
             </div>
             <input type="hidden" name="eventName" value="<%= eventName %>">
+            <br>
+            <input class="btn btn-primary" type="submit" value="Submit" />
         </div>
-        <input
-            class="btn btn-lg btn-primary"
-            type="submit"
-            value="Submit"
-        />
     </form>
 </div>
 <%- include("partials/footer") -%>

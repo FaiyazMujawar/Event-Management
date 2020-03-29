@@ -1,68 +1,83 @@
 <%- include("partials/header") -%>
 <div class="container">
-    <h3>
-        Event Details:
-    </h3>
+    <h2 class="text-left mb-0">
+        Welcome, Admin!
+    </h2>
     <br />
     <% if(event !== undefined){ %>
     <div class="card">
-        <h5 class="card-header card-header-rose"><b><%= event.name %></b> <button data-toggle="modal"
+        <h4 class="card-header card-header-rose"><b><%= event.name %></b> <button data-toggle="modal"
                 data-target="#editEvent" class="btn btn-link btn-sm text-light"><i class="far fa-edit"></i></button>
-        </h5>
+        </h4>
+        <!-- Add Event Modal -->
         <div class="modal fade" id="editEvent" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content modal-content-centered modal-md">
                     <div class="modal-body">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
-                          </button>
+                        </button>
                         <h5 class="card-title">Edit Event Details</h5>
-                            <form method="post" action=<%= `/events/event/${event.eventURI}` %>>
-                                <input type="hidden" name="oldname" value="<%= event.name %>">
-                                <div class="input-group">
-                                    <input type="text" name="eventName" class="form-control" placeholder="Event Name..."
-                                        value="<%= event.name %>" required />
-                                </div>
-                                <br>
-                                <div class="input-group">
-                                    <input type="date" class="form-control" name="date" placeholder="Event Date..."
-                                        value="<%= event.date %>" required />
-                                </div>
-                                <br>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="desc"
-                                        placeholder="Event Description..." value="<%= event.description %>" required />
-                                </div>
-                                <br>
-                                <input class="btn btn-md btn-primary" type="submit" value="Submit">
-                                <button class="btn btn-md btn-secondary" type="reset">Clear</button>
-                            </form>
+                        <form method="post" action=<%= `/events/event/${event.eventURI}` %>>
+                            <input type="hidden" name="oldname" value="<%= event.name %>">
+                            <div class="input-group">
+                                <input type="text" name="eventName" class="form-control" placeholder="Event Name..."
+                                    value="<%= event.name %>" required />
+                            </div>
+                            <br>
+                            <div class="input-group">
+                                <input type="date" class="form-control" name="date" placeholder="Event Date..."
+                                    value="<%= event.date %>" required />
+                            </div>
+                            <br>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="desc" placeholder="Event Description..."
+                                    value="<%= event.description %>" required />
+                            </div>
+                            <br>
+                            <input class="btn btn-md btn-primary" type="submit" value="Submit">
+                            <button class="btn btn-md btn-secondary" type="reset">Clear</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
         <div class="card-body">
             <p class="card-text">
-                <h5 class=" text-left">
+                <h6 class=" text-left">
                     <b>Date:</b> <%= event.date %>
-                </h5>
-                <h5 class=" text-left">
+                </h6>
+                <h6 class=" text-left">
                     <b>Description:</b> <%= event.description %>
-                </h5>
+                </h6>
             </p>
         </div>
     </div>
     <% } %>
+    <div class="title">
+        <div class="row">
+            <div class="col-10">
+                <h5 class="text-left lead">
+                    Coordinators:
+                </h5>
+            </div>
+            <div class="col-2">
+                <label class="text-muted lead text-right">
+                    Total: <%= (coords!==undefined)?coords.length:"0" %>
+                </label>
+            </div>
+        </div>
+    </div>
     <table class="table table-bordered table-hover">
         <thead class="table-light">
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Co-ordinator Name</th>
+                <th scope="col">Name</th>
                 <th scope="col">Username</th>
             </tr>
         </thead>
         <tbody>
-            <% if(coords !== undefined){ %> <% let id=1; %>
+            <% if(coords !== undefined && coords.length>0){ %> <% let id=1; %>
             <% coords.forEach(coord=>{ %>
             <tr>
                 <th scope="row"><%= id %></th>
@@ -72,7 +87,7 @@
             <% id++;}) %> <% }else { %>
             <tr>
                 <td colspan="3">
-                    <h5>No Events!</h5>
+                    <h5 class="text-muted text-center">No Events!</h5>
                 </td>
             </tr>
             <% } %>

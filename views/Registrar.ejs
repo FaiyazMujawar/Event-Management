@@ -5,6 +5,7 @@
             <div class="card card-login">
                 <div class="card-header card-header-primary text-center">
                     <h4 class="card-title">Registration</h4>
+                    <i class="fas fa-user-plus"></i>
                 </div>
                 <form class="form" method="POST" action=<%= `/events/event/${eventURI}` %>>
                     <div class="card-body">
@@ -15,6 +16,7 @@
                             <input type="text" class="form-control" name="firstName" placeholder="First Name..."
                                 required />
                         </div>
+                        <br>
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"> </span>
@@ -22,12 +24,14 @@
                             <input type="text" class="form-control" name="lastName" placeholder="Last Name..."
                                 required />
                         </div>
+                        <br>
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"> </span>
                             </div>
                             <input type="text" class="form-control" name="email" placeholder="Email..." required />
                         </div>
+                        <br>
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"> </span>
