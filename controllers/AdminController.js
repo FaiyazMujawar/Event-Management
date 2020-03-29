@@ -3,7 +3,7 @@ const eventService = require("../services/EventService");
 const registrarService = require("../services/RegistrarService");
 const participantService = require("../services/ParticipantService");
 class Admin {
-    constructor() {}
+    constructor() { }
     getAllEvents(res) {
         eventService
             .getEvents()
@@ -52,7 +52,7 @@ class Admin {
             username,
             password
         } = req.body;
-        eventName = eventName.replace(/\w\S*/g, function(txt) {
+        eventName = eventName.replace(/\w\S*/g, function (txt) {
             return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
         });
         coordinatorService
@@ -69,15 +69,17 @@ class Admin {
                     .addEvent(eventName, date, desc)
                     .then(reply => {
                         console.log("msg", reply.msg);
+                        res.redirect("/events");
                     })
                     .catch(err => {
                         console.log("msg", err.msg);
+                        res.redirect("/events");
                     });
             })
             .catch(error => {
                 console.log("msg", error.msg);
+                res.redirect("/events");
             });
-        res.send("yep");
     }
 
     updateEvent(req, res) {
@@ -85,10 +87,10 @@ class Admin {
         eventService
             .updateEvent(oldname, eventName, date, desc)
             .then(response => {
-                res.send(response);
+                res.redirect("/events");
             })
             .catch(error => {
-                res.send(error);
+                res.redirect("/events");
             });
     }
 
@@ -106,17 +108,19 @@ class Admin {
                                 participantService
                                     .deleteAllParticipants(eventName)
                                     .then(() => {
-                                        res.send({
+                                        /* res.send({
                                             status: true,
                                             msg: "Event deleted"
-                                        });
+                                        }); */
+                                        res.redirect("/events");
                                     })
                                     .catch(() => {
-                                        res.send({
+                                        res.redirect("/events");
+                                        /* res.send({
                                             status: true,
                                             msg:
                                                 "Event deleted,participants not deleted"
-                                        });
+                                        }); */
                                     });
                             })
                             .catch(() => {

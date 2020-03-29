@@ -9,3 +9,12 @@ body {
     text-align: left;
     background-color: #fafafa;
 }
+
+.registration{
+    width: 60%;
+    margin: auto;
+}
+
+.registration form{
+    padding: 10%;
+}

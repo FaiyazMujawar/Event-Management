@@ -29,6 +29,8 @@ router
             } else if (req.user.type === "coordinator") {
                 Coordinator.getEvent(req, res);
             }
+        } else {
+            res.redirect("/users/login")
         }
     })
     .post((req, res) => {
@@ -61,10 +63,14 @@ router
 router
     .route("/event/:eventName/registrars")
     .get((req, res) => {
-        if (req.isAuthenticated() && req.user.type === "coordinator") {
-            res.render("AddRegistrar", {
-                eventName: _.kebabCase(req.user.eventName)
-            });
+        if (req.isAuthenticated()) {
+            if (req.user.type === "coordinator") {
+                res.render("AddRegistrar", {
+                    eventName: _.kebabCase(req.user.eventName)
+                });
+            } else {
+                res.redirect("/users/login");
+            }
         }
     })
     .post((req, res) => {
@@ -77,6 +83,7 @@ router
                 }
             }
         } else {
+            res.redirect("/users/login");
         }
     });
 

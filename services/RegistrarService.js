@@ -1,7 +1,7 @@
 const userRepo = require("../repos/UserRepo");
 
 class RegistrarService {
-    constructor() {}
+    constructor() { }
 
     async getEventRegistrars(eventName) {
         return new Promise((resolve, reject) => {
@@ -37,7 +37,6 @@ class RegistrarService {
     }
 
     async deleteRegistrar(eventName, username) {
-        console.log(eventName, username);
         return new Promise((resolve, reject) => {
             userRepo
                 .deleteUser(eventName, username)
