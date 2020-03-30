@@ -2,8 +2,9 @@ const coordinatorService = require("../services/CoordinatorService");
 const eventService = require("../services/EventService");
 const registrarService = require("../services/RegistrarService");
 const participantService = require("../services/ParticipantService");
+const _ = require("lodash");
 class Admin {
-    constructor() { }
+    constructor() {}
     getAllEvents(res) {
         eventService
             .getEvents()
@@ -19,25 +20,29 @@ class Admin {
         eventService
             .getEvent(req.params.eventName)
             .then(event => {
+                const name = event.name;
                 coordinatorService
                     .getEventCoordinators(req.params.eventName)
                     .then(coords => {
                         res.render("AdminEvent", {
                             event: event,
+                            eventURI: _.kebabCase(name),
                             coords: coords
                         });
                     })
                     .catch(() => {
                         res.render("AdminEvent", {
                             event: undefined,
-                            coords: undefined
+                            coords: undefined,
+                            eventURI: undefined
                         });
                     });
             })
             .catch(() => {
                 res.render("AdminEvent", {
                     event: undefined,
-                    coords: undefined
+                    coords: undefined,
+                    eventURI: undefined
                 });
             });
     }
@@ -52,7 +57,7 @@ class Admin {
             username,
             password
         } = req.body;
-        eventName = eventName.replace(/\w\S*/g, function (txt) {
+        eventName = eventName.replace(/\w\S*/g, function(txt) {
             return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
         });
         coordinatorService
@@ -87,10 +92,10 @@ class Admin {
         eventService
             .updateEvent(oldname, eventName, date, desc)
             .then(response => {
-                res.redirect("/events");
+                res.redirect(`/events/event/${_.kebabCase(eventName)}`);
             })
             .catch(error => {
-                res.redirect("/events");
+                res.redirect(`/events/event/${_.kebabCase(eventName)}`);
             });
     }
 
@@ -140,6 +145,26 @@ class Admin {
             .catch(error => {
                 res.send(error);
             });
+    }
+
+    async addCoordinator(req) {
+        return new Promise((resolve, reject) => {
+            const { firstName, lastName, username, password } = req.body;
+            coordinatorService
+                .addEventCoordinator(
+                    firstName,
+                    lastName,
+                    username,
+                    password,
+                    req.body.eventName
+                )
+                .then(response => {
+                    return resolve(true);
+                })
+                .catch(error => {
+                    return reject(false);
+                });
+        });
     }
 }
 

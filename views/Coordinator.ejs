@@ -3,9 +3,6 @@
     <h2>
         Welcome, Co-ordinator!
     </h2>
-    <h4 class="text-left">
-        Event Details:
-    </h4>
     <br />
     <% if(event !== undefined){ %>
     <div class="card">
@@ -27,8 +24,8 @@
             <h5 class="text-left lead">
                 Registrar:
                 <!-- Add Registrar Button -->
-                <button data-toggle="modal" data-target="#addRegistrar" class="btn btn-link btn-sm text-muted"><i
-                        class="fas fa-user-plus"></i></button>
+                <button data-toggle="modal" data-target="#addRegistrar" class="btn btn-link btn-sm text-muted">
+                    <i class="fas fa-user-plus"></i></button>
             </h5>
         </div>
         <div class="col-2 lead text-muted text-right">
@@ -43,7 +40,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h5 class="card-title">Add Registrar</h5>
+                    <h5 class="card-title"><i class="fas fa-user-plus"></i> Add Registrar</h5>
                     <form method="post" action=<%= `/events/event/${event.eventURI}/registrars` %>>
                         <div class="input-group">
                             <input type="text" name="firstName" class="form-control" placeholder="First Name..."
@@ -132,7 +129,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h5 class="card-title">Add Participant</h5>
+                    <h5 class="card-title"><i class="fas fa-user-plus"></i> Add Participant</h5>
                     <form method="post" action=<%= `/events/event/${event.eventURI}/participants` %>>
                         <div class="input-group">
                             <input type="text" name="firstName" class="form-control" placeholder="First Name..."

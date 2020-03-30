@@ -37,6 +37,14 @@ mongoose
 
 mongoose.set("useFindAndModify", false);
 
+app.get("/", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.redirect("/events");
+    } else {
+        res.redirect("/users/login");
+    }
+});
+
 app.use("/users/", require("./routes/Login.js"));
 app.use("/events/", require("./routes/Event"));
 

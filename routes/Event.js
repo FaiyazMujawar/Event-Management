@@ -30,7 +30,7 @@ router
                 Coordinator.getEvent(req, res);
             }
         } else {
-            res.redirect("/users/login")
+            res.redirect("/users/login");
         }
     })
     .post((req, res) => {
@@ -38,6 +38,25 @@ router
             if (req.user.type === "admin") {
                 if (req.body.action === "delete") {
                     Admin.deleteEvent(req, res);
+                } else if (req.body.action === "add") {
+                    Admin.addCoordinator(req)
+                        .then(() => {
+                            console.log("added");
+
+                            res.redirect(
+                                `/events/event/${_.kebabCase(
+                                    req.body.eventName
+                                )}`
+                            );
+                        })
+                        .catch(() => {
+                            console.log("not added");
+                            res.redirect(
+                                `/events/event/${_.kebabCase(
+                                    req.body.eventName
+                                )}`
+                            );
+                        });
                 } else {
                     Admin.updateEvent(req, res);
                 }

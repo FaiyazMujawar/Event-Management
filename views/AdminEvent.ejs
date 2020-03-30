@@ -18,7 +18,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                         <h5 class="card-title">Edit Event Details</h5>
-                        <form method="post" action=<%= `/events/event/${event.eventURI}` %>>
+                        <form method="post" action="<%= `/events/event/${eventURI}` %>">
                             <input type="hidden" name="oldname" value="<%= event.name %>">
                             <div class="input-group">
                                 <input type="text" name="eventName" class="form-control" placeholder="Event Name..."
@@ -42,6 +42,9 @@
                 </div>
             </div>
         </div>
+
+        <!-- Event Details -->
+
         <div class="card-body">
             <p class="card-text">
                 <h6 class=" text-left">
@@ -53,12 +56,16 @@
             </p>
         </div>
     </div>
-    <% } %>
+
+    <!-- Co-ordinators Details -->
+
     <div class="title">
         <div class="row">
             <div class="col-10">
                 <h5 class="text-left lead">
                     Coordinators:
+                    <button data-toggle="modal" data-target="#addCoordinator" class="btn btn-link btn-sm text-light">
+                        <i class="fas fa-user-plus"></i></button>
                 </h5>
             </div>
             <div class="col-2">
@@ -68,6 +75,50 @@
             </div>
         </div>
     </div>
+
+    <!-- Co-ordinators Modal -->
+
+    <div class="modal fade" id="addCoordinator" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content modal-content-centered modal-md">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h5 class="card-title"><i class="fas fa-user-plus"></i> Add Co-ordinator</h5>
+                    <form method="post" action="<%= `/events/event/${eventURI}` %>">
+                        <input type="hidden" name="action" value="add">
+                        <input type="hidden" name="eventName" value="<%= event.name %>">
+                        <div class="input-group">
+                            <input type="text" name="firstName" class="form-control" placeholder="First Name..."
+                                required />
+                        </div>
+                        <br>
+                        <div class="input-group">
+                            <input type="text" name="lastName" class="form-control" placeholder="Last Name..."
+                                required />
+                        </div>
+                        <br>
+                        <div class="input-group">
+                            <input type="text" name="username" class="form-control" placeholder="Username..."
+                                required />
+                        </div>
+                        <br>
+                        <div class="input-group">
+                            <input type="password" name="password" class="form-control" placeholder="Password..."
+                                required />
+                        </div>
+                        <br>
+                        <input class="btn btn-md btn-primary" type="submit" value="Submit">
+                        <button class="btn btn-md btn-secondary" type="reset">Clear</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Co-ordinators  table-->
+
     <table class="table table-bordered table-hover">
         <thead class="table-light">
             <tr>
@@ -93,5 +144,6 @@
             <% } %>
         </tbody>
     </table>
+    <% } %>
 </div>
 <%- include("partials/footer") -%>
