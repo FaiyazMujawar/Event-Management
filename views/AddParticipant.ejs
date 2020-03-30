@@ -1,5 +1,8 @@
 <%- include("partials/header") -%>
 <div class="container register">
+    <br>
+    <%- include("partials/messages") -%>
+    <br>
     <form method="post" class="form" action=<%= `/events/event/${eventURI}/participants` %>>
         <div class="card registration">
             <div class="card-header card-header-info text-center">

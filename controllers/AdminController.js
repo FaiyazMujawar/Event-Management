@@ -5,40 +5,43 @@ const participantService = require("../services/ParticipantService");
 const _ = require("lodash");
 class Admin {
     constructor() {}
-    getAllEvents(res) {
-        eventService
-            .getEvents()
-            .then(events => {
-                res.render("Admin", { events: events });
-            })
-            .catch(() => {
-                res.render("Admin", { events: undefined });
-            });
+    async getAllEvents() {
+        return new Promise((resolve, reject) => {
+            eventService
+                .getEvents()
+                .then(events => {
+                    return resolve(events);
+                })
+                .catch(() => {
+                    return reject(null);
+                });
+        });
     }
 
     getEvent(req, res) {
         eventService
             .getEvent(req.params.eventName)
             .then(event => {
-                const name = event.name;
+                const name = event.event.name;
                 coordinatorService
-                    .getEventCoordinators(req.params.eventName)
+                    .getEventCoordinators(name)
                     .then(coords => {
                         res.render("AdminEvent", {
-                            event: event,
-                            eventURI: _.kebabCase(name),
-                            coords: coords
+                            event: event.event,
+                            coords: coords,
+                            eventURI: event.eventURI
                         });
                     })
                     .catch(() => {
                         res.render("AdminEvent", {
-                            event: undefined,
+                            event: event,
                             coords: undefined,
-                            eventURI: undefined
+                            eventURI: event.eventURI
                         });
                     });
             })
-            .catch(() => {
+            .catch(error => {
+                console.log("here", error);
                 res.render("AdminEvent", {
                     event: undefined,
                     coords: undefined,
@@ -69,20 +72,29 @@ class Admin {
                 eventName
             )
             .then(response => {
-                console.log("msg:", response.msg);
                 eventService
                     .addEvent(eventName, date, desc)
                     .then(reply => {
                         console.log("msg", reply.msg);
+                        req.session.response = {
+                            success: reply.msg,
+                            error: undefined
+                        };
                         res.redirect("/events");
                     })
                     .catch(err => {
-                        console.log("msg", err.msg);
+                        req.session.response = {
+                            success: undefined,
+                            error: err.msg
+                        };
                         res.redirect("/events");
                     });
             })
             .catch(error => {
-                console.log("msg", error.msg);
+                req.session.response = {
+                    success: undefined,
+                    error: error.msg
+                };
                 res.redirect("/events");
             });
     }
@@ -92,58 +104,82 @@ class Admin {
         eventService
             .updateEvent(oldname, eventName, date, desc)
             .then(response => {
-                res.redirect(`/events/event/${_.kebabCase(eventName)}`);
+                req.session.response = {
+                    success: "Event updated!",
+                    error: undefined
+                };
+                res.redirect("/events");
             })
             .catch(error => {
-                res.redirect(`/events/event/${_.kebabCase(eventName)}`);
+                req.session.response = {
+                    success: undefined,
+                    error: "Event updation failed!"
+                };
+                res.redirect("/events");
             });
     }
 
     deleteEvent(req, res) {
         const eventName = req.body.eventName;
-        eventService
-            .deleteEvent(eventName)
+        participantService
+            .deleteAllParticipants(eventName)
             .then(() => {
-                coordinatorService
-                    .deleteAllCorrdinators(eventName)
+                registrarService
+                    .deleteAllRegistrars(eventName)
                     .then(() => {
-                        registrarService
-                            .deleteAllRegistrars(eventName)
+                        coordinatorService
+                            .deleteAllCorrdinators(eventName)
                             .then(() => {
-                                participantService
-                                    .deleteAllParticipants(eventName)
+                                eventService
+                                    .deleteEvent(eventName)
                                     .then(() => {
-                                        /* res.send({
-                                            status: true,
-                                            msg: "Event deleted"
-                                        }); */
+                                        req.session.response = {
+                                            success: "Event Deleted!",
+                                            error: undefined
+                                        };
                                         res.redirect("/events");
                                     })
                                     .catch(() => {
+                                        req.session.response = {
+                                            success: undefined,
+                                            error: "Event deletion failed!"
+                                        };
                                         res.redirect("/events");
-                                        /* res.send({
-                                            status: true,
-                                            msg:
-                                                "Event deleted,participants not deleted"
-                                        }); */
                                     });
                             })
                             .catch(() => {
-                                res.send({
-                                    status: true,
-                                    msg: "Event deleted,registrars not deleted"
-                                });
+                                req.session.response = {
+                                    success: undefined,
+                                    error: "Event deletion failed!"
+                                };
+                                res.redirect("/events");
                             });
                     })
                     .catch(() => {
-                        res.send({
-                            status: false,
-                            msg: "Event deleted,co-ordiantors deletion failed"
-                        });
+                        req.session.response = {
+                            success: undefined,
+                            error: "Event deletion failed!"
+                        };
+                        res.redirect("/events");
                     });
             })
-            .catch(error => {
-                res.send(error);
+            .catch(() => {
+                req.session.response = {
+                    success: undefined,
+                    error: "Event deletion failed!"
+                };
+                res.redirect("/events");
+            });
+    }
+
+    deleteCoordinator(req, res) {
+        coordinatorService
+            .deleteCoordinator(req.params.eventName, req.body.username)
+            .then(() => {
+                res.redirect(`/events/event/${req.params.eventName}`);
+            })
+            .catch(() => {
+                res.redirect(`/events/event/${req.params.eventName}`);
             });
     }
 

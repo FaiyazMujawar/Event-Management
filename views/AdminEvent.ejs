@@ -125,6 +125,7 @@
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
                 <th scope="col">Username</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
@@ -134,10 +135,17 @@
                 <th scope="row"><%= id %></th>
                 <td><%= coord.firstName %> <%= coord.lastName %></td>
                 <td><%= coord.username %></td>
+                <td>
+                    <form method="post" action=<%= `/events/event/${eventURI}/coordinators` %>>
+                        <input type="hidden" name="username" value="<%= coord.username %>">
+                        <button name="action" value="delete" type="submit" class="btn btn-sm btn-link text-danger"><i
+                                class="far fa-trash-alt"></i></button>
+                    </form>
+                </td>
             </tr>
             <% id++;}) %> <% }else { %>
             <tr>
-                <td colspan="3">
+                <td colspan="4">
                     <h5 class="text-muted text-center">No Events!</h5>
                 </td>
             </tr>
