@@ -7,7 +7,29 @@ const Registrar = require("../controllers/RegistrarController");
 router.get("/", (req, res) => {
     if (req.isAuthenticated()) {
         if (req.user.type === "admin") {
-            Admin.getAllEvents(res);
+            Admin.getAllEvents(res)
+                .then(events => {
+                    if (req.session.response === null) {
+                        res.render("Admin", {
+                            events: events,
+                            response: undefined
+                        });
+                        req.session.response = undefined;
+                    } else {
+                        res.render("Admin", {
+                            events: events,
+                            response: req.session.response
+                        });
+                        req.session.response = undefined;
+                    }
+                })
+                .catch(() => {
+                    res.render("Admin", {
+                        events: undefined,
+                        response: undefined
+                    });
+                    req.session.response = undefined;
+                });
         } else if (req.user.type === "coordinator") {
             res.redirect(`/events/event/${_.kebabCase(req.user.eventName)}`);
         } else if (req.user.type === "registrar") {
@@ -30,7 +52,7 @@ router
                 Coordinator.getEvent(req, res);
             }
         } else {
-            res.redirect("/users/login")
+            res.redirect("/users/login");
         }
     })
     .post((req, res) => {
