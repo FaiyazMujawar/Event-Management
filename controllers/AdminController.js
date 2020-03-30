@@ -21,25 +21,30 @@ class Admin {
         eventService
             .getEvent(req.params.eventName)
             .then(event => {
+                const name = event.event.name;
                 coordinatorService
-                    .getEventCoordinators(req.params.eventName)
+                    .getEventCoordinators(name)
                     .then(coords => {
                         res.render("AdminEvent", {
-                            event: event,
-                            coords: coords
+                            event: event.event,
+                            coords: coords,
+                            eventURI: event.eventURI
                         });
                     })
                     .catch(() => {
                         res.render("AdminEvent", {
-                            event: undefined,
-                            coords: undefined
+                            event: event,
+                            coords: undefined,
+                            eventURI: event.eventURI
                         });
                     });
             })
-            .catch(() => {
+            .catch(error => {
+                console.log("here", error);
                 res.render("AdminEvent", {
                     event: undefined,
-                    coords: undefined
+                    coords: undefined,
+                    eventURI: undefined
                 });
             });
     }
@@ -163,6 +168,17 @@ class Admin {
                     error: "Event deletion failed!"
                 };
                 res.redirect("/events");
+            });
+    }
+
+    deleteCoordinator(req, res) {
+        coordinatorService
+            .deleteCoordinator(req.params.eventName, req.body.username)
+            .then(() => {
+                res.redirect(`/events/event/${req.params.eventName}`);
+            })
+            .catch(() => {
+                res.redirect(`/events/event/${req.params.eventName}`);
             });
     }
 }

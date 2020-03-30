@@ -82,7 +82,10 @@ class EventService {
             eventRepo
                 .getEvent(name)
                 .then(event => {
-                    return resolve(event);
+                    return resolve({
+                        event: event,
+                        eventURI: _.kebabCase(name)
+                    });
                 })
                 .catch(() => {
                     return reject(null);

@@ -43,6 +43,19 @@ router.get("/", (req, res) => {
 });
 
 router
+    .route("/add")
+    .get((req, res) => {
+        if (req.isAuthenticated() && req.user.type === "admin") {
+            res.render("AddEvent");
+        } else {
+            res.redirect("/users/login");
+        }
+    })
+    .post((req, res) => {
+        Admin.addEvent(req, res);
+    });
+
+router
     .route("/event/:eventName")
     .get((req, res) => {
         if (req.isAuthenticated()) {
@@ -58,29 +71,19 @@ router
     .post((req, res) => {
         if (req.isAuthenticated()) {
             if (req.user.type === "admin") {
-                if (req.body.action === "delete") {
-                    Admin.deleteEvent(req, res);
-                } else {
-                    Admin.updateEvent(req, res);
-                }
+                Admin.updateEvent(req, res);
             }
         } else {
             res.redirect("/users/login");
         }
     });
 
-router
-    .route("/add")
-    .get((req, res) => {
-        if (req.isAuthenticated() && req.user.type === "admin") {
-            res.render("AddEvent");
-        } else {
-            res.redirect("/users/login");
-        }
-    })
-    .post((req, res) => {
-        Admin.addEvent(req, res);
-    });
+router.post("/event/:eventName/coordinators", (req, res) => {
+    if (req.body.action === "add") {
+    } else if (req.body.action === "delete") {
+        Admin.deleteCoordinator(req, res);
+    }
+});
 
 router
     .route("/event/:eventName/registrars")
@@ -113,12 +116,13 @@ router
     .route("/event/:eventName/participants")
     .get((req, res) => {
         if (req.isAuthenticated()) {
-            res.render("AddParticipant", {
-                type: "",
-                msg: undefined,
-                eventName: req.user.eventName,
-                eventURI: _.kebabCase(req.user.eventName)
-            });
+            if (req.user.type === "registrar") {
+                res.render("AddParticipant", {
+                    eventName: req.user.eventName,
+                    eventURI: _.kebabCase(req.user.eventName),
+                    response: req.session.response
+                });
+            }
         } else {
             res.redirect("/users/login");
         }
@@ -147,21 +151,23 @@ router
                 }
             } else if (req.user.type === "registrar") {
                 Registrar.addParticipant(req, res)
-                    .then(response => {
-                        res.render("AddParticipant", {
-                            status: true,
-                            msg: response.msg,
-                            eventName: req.user.eventName,
-                            eventURI: _.kebabCase(req.user.eventName)
-                        });
+                    .then(() => {
+                        req.session.response = {
+                            success: "Participant added!",
+                            error: undefined
+                        };
+                        res.redirect(
+                            `/events/event/${req.params.eventName}/participants`
+                        );
                     })
-                    .catch(error => {
-                        res.render("AddParticipant", {
-                            status: false,
-                            msg: error.msg,
-                            eventName: req.user.eventName,
-                            eventURI: _.kebabCase(req.user.eventName)
-                        });
+                    .catch(() => {
+                        req.session.response = {
+                            success: "Participant added!",
+                            error: undefined
+                        };
+                        res.redirect(
+                            `/events/event/${req.params.eventName}/participants`
+                        );
                     });
             }
         } else {

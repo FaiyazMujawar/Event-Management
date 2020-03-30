@@ -83,7 +83,24 @@ class CoordinatorService {
         });
     }
 
-    async deleteAllCorrdinators(eventName) {
+    async deleteCoordinator(eventName, username) {
+        eventName = _.lowerCase(eventName);
+        eventName = eventName.replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+        return new Promise((resolve, reject) => {
+            userRepo
+                .deleteUser(eventName, username)
+                .then(() => {
+                    return resolve(true);
+                })
+                .catch(() => {
+                    return reject(false);
+                });
+        });
+    }
+
+    async deleteAllCoordinators(eventName) {
         return new Promise((resolve, reject) => {
             userRepo
                 .deleteAllUsers(eventName, "coordinator")
