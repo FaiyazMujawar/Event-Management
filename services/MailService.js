@@ -4,7 +4,7 @@ const Mailer = require("nodemailer");
 class Mail {
     constructor() {
         this.mailer = Mailer.createTransport({
-            service: "yahoo",
+            service: process.env.SERVICE,
             auth: {
                 user: process.env.EMAIL,
                 pass: process.env.PASSWORD
