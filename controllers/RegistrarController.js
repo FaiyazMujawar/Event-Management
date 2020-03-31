@@ -1,5 +1,5 @@
 const participantService = require("../services/ParticipantService");
-const _ = require("lodash");
+const mail = require("../services/MailService");
 
 class Registrar {
     constructor() {}
@@ -16,6 +16,7 @@ class Registrar {
                     req.user.eventName
                 )
                 .then(response => {
+                    mail.sendConfirmation(email, req.user.eventName);
                     return resolve(response);
                 })
                 .catch(error => {
