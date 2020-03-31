@@ -14,4 +14,9 @@ router
         }
     );
 
+router.get("/logout", (req, res) => {
+    req.session.destroy();
+    res.redirect("/users/login");
+});
+
 module.exports = router;

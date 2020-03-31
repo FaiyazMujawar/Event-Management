@@ -1,9 +1,10 @@
+require("dotenv").config();
 const Mailer = require("nodemailer");
 
 class Mail {
     constructor() {
         this.mailer = Mailer.createTransport({
-            service: "gmail",
+            service: "yahoo",
             auth: {
                 user: process.env.EMAIL,
                 pass: process.env.PASSWORD

@@ -13,37 +13,28 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"> </span>
                             </div>
-                            <input
-                                type="text"
-                                class="form-control"
-                                name="username"
-                                placeholder="Username..."
-                                required
-                            />
+                            <input type="text" class="form-control" name="username" placeholder="Username..."
+                                required />
                         </div>
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"> </span>
                             </div>
-                            <input
-                                type="password"
-                                class="form-control"
-                                name="password"
-                                placeholder="Password..."
-                                required
-                            />
+                            <input type="password" class="form-control" name="password" placeholder="Password..."
+                                required />
                         </div>
                     </div>
-                    <input
-                        type="submit"
-                        class="btn btn-primary btn-lg"
-                        type="button"
-                        value="Login"
-                    />
+                    <input type="submit" class="btn btn-primary btn-lg" type="button" value="Login" />
                 </form>
                 <br>
             </div>
         </div>
     </div>
 </div>
+<script>
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        history.go(1);
+    };
+</script>
 <%- include("partials/footer") -%>

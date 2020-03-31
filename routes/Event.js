@@ -6,7 +6,6 @@ const Registrar = require("../controllers/RegistrarController");
 
 router.get("/", (req, res) => {
     if (req.isAuthenticated()) {
-        console.log(req.session.response);
         if (req.user.type === "admin") {
             Admin.getAllEvents()
                 .then(events => {
@@ -122,34 +121,19 @@ router.post("/event/:eventName/coordinators", (req, res) => {
     }
 });
 
-router
-    .route("/event/:eventName/registrars")
-    .get((req, res) => {
-        if (req.isAuthenticated()) {
-            if (req.user.type === "coordinator") {
-                res.render("AddRegistrar", {
-                    eventName: _.kebabCase(req.user.eventName)
-                });
+router.route("/event/:eventName/registrars").post((req, res) => {
+    if (req.isAuthenticated()) {
+        if (req.user.type === "coordinator") {
+            if (req.body.action === "delete") {
+                Coordinator.deleteRegistrar(req, res);
             } else {
-                res.redirect("/events");
+                Coordinator.addRegistrar(req, res);
             }
-        } else {
-            res.redirect("/users/login");
         }
-    })
-    .post((req, res) => {
-        if (req.isAuthenticated()) {
-            if (req.user.type === "coordinator") {
-                if (req.body.action === "delete") {
-                    Coordinator.deleteRegistrar(req, res);
-                } else {
-                    Coordinator.addRegistrar(req, res);
-                }
-            }
-        } else {
-            res.redirect("/users/login");
-        }
-    });
+    } else {
+        res.redirect("/users/login");
+    }
+});
 
 router
     .route("/event/:eventName/participants")
@@ -177,6 +161,10 @@ router
                 } else {
                     Coordinator.addParticipant(req)
                         .then(response => {
+                            req.session.response = {
+                                success: "Participant added!",
+                                error: undefined
+                            };
                             res.redirect(
                                 `/events/event/${_.kebabCase(
                                     req.user.eventName
@@ -184,6 +172,10 @@ router
                             );
                         })
                         .catch(error => {
+                            req.session.response = {
+                                success: undefined,
+                                error: "Participant registration failed!"
+                            };
                             res.redirect(
                                 `/events/event/${_.kebabCase(
                                     req.user.eventName
@@ -205,8 +197,8 @@ router
                     })
                     .catch(() => {
                         req.session.response = {
-                            success: "Participant added!",
-                            error: undefined
+                            success: undefined,
+                            error: "Participant registration failed!"
                         };
                         res.redirect(
                             `/events/event/${req.params.eventName}/participants`

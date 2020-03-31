@@ -1,5 +1,4 @@
 body {
-    padding: 5% 2%;
     margin: 0;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
     font-size: 1rem;
@@ -17,4 +16,16 @@ body {
 
 .registration form{
     padding: 10%;
+}
+
+.container {
+    padding: 0% 2% 5% 2%;
+}
+
+a{
+    color: black;
+}
+
+.nav-link {
+    margin-right: 10%;
 }
