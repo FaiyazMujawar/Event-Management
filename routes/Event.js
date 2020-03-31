@@ -6,29 +6,28 @@ const Registrar = require("../controllers/RegistrarController");
 
 router.get("/", (req, res) => {
     if (req.isAuthenticated()) {
+        console.log(req.session.response);
         if (req.user.type === "admin") {
-            Admin.getAllEvents(res)
+            Admin.getAllEvents()
                 .then(events => {
-                    if (req.session.response === null) {
-                        res.render("Admin", {
-                            events: events,
-                            response: undefined
-                        });
-                        req.session.response = undefined;
-                    } else {
-                        res.render("Admin", {
-                            events: events,
-                            response: req.session.response
-                        });
-                        req.session.response = undefined;
-                    }
+                    res.render("Admin", {
+                        events: events,
+                        response: req.session.response
+                    });
+                    req.session.response = {
+                        success: undefined,
+                        error: undefined
+                    };
                 })
                 .catch(() => {
                     res.render("Admin", {
                         events: undefined,
                         response: undefined
                     });
-                    req.session.response = undefined;
+                    req.session.response = {
+                        success: undefined,
+                        error: undefined
+                    };
                 });
         } else if (req.user.type === "coordinator") {
             res.redirect(`/events/event/${_.kebabCase(req.user.eventName)}`);
@@ -45,8 +44,20 @@ router.get("/", (req, res) => {
 router
     .route("/add")
     .get((req, res) => {
-        if (req.isAuthenticated() && req.user.type === "admin") {
-            res.render("AddEvent");
+        if (req.isAuthenticated()) {
+            if (req.user.type === "admin") {
+                res.render("AddEvent", { response: req.session.response });
+                req.session.response = {
+                    success: undefined,
+                    error: undefined
+                };
+            } else {
+                req.session.response = {
+                    success: undefined,
+                    error: "Access denied!"
+                };
+                res.redirect("/events");
+            }
         } else {
             res.redirect("/users/login");
         }
@@ -63,7 +74,10 @@ router
                 Admin.getEvent(req, res);
             } else if (req.user.type === "coordinator") {
                 Coordinator.getEvent(req, res);
+            } else {
+                res.redirect("/events");
             }
+            req.session.response = undefined;
         } else {
             res.redirect("/users/login");
         }
@@ -71,7 +85,11 @@ router
     .post((req, res) => {
         if (req.isAuthenticated()) {
             if (req.user.type === "admin") {
-                Admin.updateEvent(req, res);
+                if (req.body.action === "delete") {
+                    Admin.deleteEvent(req, res);
+                } else {
+                    Admin.updateEvent(req, res);
+                }
             }
         } else {
             res.redirect("/users/login");
@@ -79,9 +97,28 @@ router
     });
 
 router.post("/event/:eventName/coordinators", (req, res) => {
-    if (req.body.action === "add") {
-    } else if (req.body.action === "delete") {
-        Admin.deleteCoordinator(req, res);
+    if (req.user.type === "admin") {
+        if (req.body.action === "add") {
+            Admin.addCoordinator(req)
+                .then(() => {
+                    req.session.response = {
+                        success: "Co-ordinator added!",
+                        error: undefined
+                    };
+                    res.redirect(`/events/event/${req.params.eventName}`);
+                    req.session.response = undefined;
+                })
+                .catch(() => {
+                    req.session.response = {
+                        success: undefined,
+                        error: "Co-ordinator addition failed!"
+                    };
+                    res.redirect(`/events/event/${req.params.eventName}`);
+                    req.session.response = undefined;
+                });
+        } else if (req.body.action === "delete") {
+            Admin.deleteCoordinator(req, res);
+        }
     }
 });
 
@@ -94,8 +131,10 @@ router
                     eventName: _.kebabCase(req.user.eventName)
                 });
             } else {
-                res.redirect("/users/login");
+                res.redirect("/events");
             }
+        } else {
+            res.redirect("/users/login");
         }
     })
     .post((req, res) => {
@@ -122,6 +161,9 @@ router
                     eventURI: _.kebabCase(req.user.eventName),
                     response: req.session.response
                 });
+                req.session.response = undefined;
+            } else {
+                res.redirect("/events");
             }
         } else {
             res.redirect("/users/login");
@@ -159,6 +201,7 @@ router
                         res.redirect(
                             `/events/event/${req.params.eventName}/participants`
                         );
+                        req.session.response = undefined;
                     })
                     .catch(() => {
                         req.session.response = {
@@ -168,6 +211,7 @@ router
                         res.redirect(
                             `/events/event/${req.params.eventName}/participants`
                         );
+                        req.session.response = undefined;
                     });
             }
         } else {

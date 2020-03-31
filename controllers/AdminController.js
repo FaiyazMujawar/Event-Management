@@ -2,7 +2,6 @@ const coordinatorService = require("../services/CoordinatorService");
 const eventService = require("../services/EventService");
 const registrarService = require("../services/RegistrarService");
 const participantService = require("../services/ParticipantService");
-const _ = require("lodash");
 class Admin {
     constructor() {}
     async getAllEvents() {
@@ -26,27 +25,55 @@ class Admin {
                 coordinatorService
                     .getEventCoordinators(name)
                     .then(coords => {
-                        res.render("AdminEvent", {
-                            event: event.event,
-                            coords: coords,
-                            eventURI: event.eventURI
-                        });
+                        participantService
+                            .getAllParticipants(name)
+                            .then(participants => {
+                                res.render("AdminEvent", {
+                                    event: event.event,
+                                    coords: coords,
+                                    eventURI: event.eventURI,
+                                    response: req.session.response,
+                                    participants: participants
+                                });
+                            })
+                            .catch(() => {
+                                res.render("AdminEvent", {
+                                    event: event.event,
+                                    coords: coords,
+                                    eventURI: event.eventURI,
+                                    response: req.session.response,
+                                    participants: undefined
+                                });
+                            });
+                        req.session.response = {
+                            success: undefined,
+                            error: undefined
+                        };
                     })
                     .catch(() => {
                         res.render("AdminEvent", {
                             event: event,
                             coords: undefined,
-                            eventURI: event.eventURI
+                            eventURI: event.eventURI,
+                            response: req.session.response
                         });
+                        req.session.response = {
+                            success: undefined,
+                            error: undefined
+                        };
                     });
             })
             .catch(error => {
-                console.log("here", error);
                 res.render("AdminEvent", {
                     event: undefined,
                     coords: undefined,
-                    eventURI: undefined
+                    eventURI: undefined,
+                    response: req.session.response
                 });
+                req.session.response = {
+                    success: undefined,
+                    error: undefined
+                };
             });
     }
 
@@ -75,7 +102,6 @@ class Admin {
                 eventService
                     .addEvent(eventName, date, desc)
                     .then(reply => {
-                        console.log("msg", reply.msg);
                         req.session.response = {
                             success: reply.msg,
                             error: undefined
@@ -87,15 +113,16 @@ class Admin {
                             success: undefined,
                             error: err.msg
                         };
-                        res.redirect("/events");
+                        res.redirect(`/events/add`);
                     });
             })
             .catch(error => {
                 req.session.response = {
                     success: undefined,
-                    error: error.msg
+                    error: error.msg,
+                    response: undefined
                 };
-                res.redirect("/events");
+                res.redirect(`/events/add`);
             });
     }
 
@@ -108,14 +135,14 @@ class Admin {
                     success: "Event updated!",
                     error: undefined
                 };
-                res.redirect("/events");
+                res.redirect(`/events/event/${req.params.eventName}`);
             })
             .catch(error => {
                 req.session.response = {
                     success: undefined,
                     error: "Event updation failed!"
                 };
-                res.redirect("/events");
+                res.redirect(`/events/event/${req.params.eventName}`);
             });
     }
 
@@ -128,7 +155,7 @@ class Admin {
                     .deleteAllRegistrars(eventName)
                     .then(() => {
                         coordinatorService
-                            .deleteAllCorrdinators(eventName)
+                            .deleteAllCoordinators(eventName)
                             .then(() => {
                                 eventService
                                     .deleteEvent(eventName)
@@ -176,10 +203,20 @@ class Admin {
         coordinatorService
             .deleteCoordinator(req.params.eventName, req.body.username)
             .then(() => {
+                req.session.response = {
+                    success: "Co-ordinator deleted!",
+                    error: undefined
+                };
                 res.redirect(`/events/event/${req.params.eventName}`);
+                req.session.response = undefined;
             })
             .catch(() => {
+                req.session.response = {
+                    success: undefined,
+                    error: "Co-ordinator deletion failed!"
+                };
                 res.redirect(`/events/event/${req.params.eventName}`);
+                req.session.response = undefined;
             });
     }
 
